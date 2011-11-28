@@ -414,6 +414,8 @@ div.olLayerDiv,.olControlNoSelect {
 	color:#333;
 }
 
+
+/*Google Styles*/
 .olGoogleAttribution.hybrid,.olGoogleAttribution.satellite,span.olGoogleAttribution.hybrid a,span.olGoogleAttribution.satellite a {
 	color:#EEE;
 }

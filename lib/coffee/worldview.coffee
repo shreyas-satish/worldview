@@ -17,6 +17,15 @@ class WorldView
     lonLat = WorldView.transformToMercator(@map, lon, lat)
     feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
     feature
+
+  initPopup: (feature) => new OpenLayers.Popup.FramedCloud("chicken", 
+    feature.geometry.getBounds().getCenterLonLat(),
+    new OpenLayers.Size(500,500),
+    "<h2>"+feature.attributes.name + "</h2>" + feature.attributes.description,
+    null, true, this.onPopupClose
+  )
+
+  onPopupClose: (evt) => @featureControl.unselectAll()
   
   addVectorMarker: (vectorMarkerOptions) ->
     feature = this.initVectorMarker(vectorMarkerOptions.lon, vectorMarkerOptions.lat,
@@ -25,13 +34,41 @@ class WorldView
     feature
   
   addVectorMarkers: (markersOptions) ->
-    for lonLat in markersOptions.lonLats
-      this.addVectorMarker {lon: lonLat.lon, lat: lonLat.lat, vectorLayer: markersOptions.vectorLayer,
-      style: markersOptions.style}
+    this.registerEventsOnVectorLayer(markersOptions.vectorLayer) if markersOptions.popups
+    for point in markersOptions.points
+      this.addVectorMarker({
+        lon: point.lon, lat: point.lat, vectorLayer: markersOptions.vectorLayer,
+        style: markersOptions.style,
+        attributes: {name: point.name, description: point.description}
+      })
+    
+  registerEventsOnVectorLayer: (vectorLayer) ->
+    @featureControl = new OpenLayers.Control.SelectFeature(vectorLayer)
+
+    vectorLayer.events.on({
+      'featureselected': this.onFeatureSelect, 'featureunselected': this.onFeatureUnselect
+    })
+
+    @map.addControl(@featureControl)        
+    @featureControl.activate()
+
 
   initVectorLayer: (name = "Vector Layer", options = {style: WorldView.Config.vectorMarkerStyle}) ->
-    vectorLayer = new OpenLayers.Layer.Vector(name, options);
+    vectorLayer = new OpenLayers.Layer.Vector(name, options)
     @map.addLayer vectorLayer
     vectorLayer
+
+  onFeatureSelect: (event) =>
+    feature = event.feature
+    popup = this.initPopup(feature)
+    feature.popup = popup
+    @map.addPopup(popup)
+  
+  onFeatureUnselect: (event) ->
+    feature = event.feature
+    if feature.popup
+      @map.removePopup(feature.popup)
+      feature.popup.destroy()
+      delete feature.popup
 
 root.WorldView = WorldView

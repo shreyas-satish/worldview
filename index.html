@@ -6,16 +6,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
         <title>OpenLayers Google (v3) Layer Example</title>
         <link rel="stylesheet" href="lib/css/map.css" type="text/css">
-        <link rel="stylesheet" href="http://openlayers.org/dev/theme/default/google.css" type="text/css">
         <link rel="stylesheet" href="lib/css/style.css" type="text/css">
         <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
         <script src="http://openlayers.org/dev/OpenLayers.js"></script>
-        <script src="lib/js/worldview.js"></script>
-        <script src="lib/js/worldview_config.js"></script>
-        <script src="lib/js/worldview_layer_definitions.js"></script>
+        <script src="lib/coffee/worldview.js"></script>
+        <script src="lib/coffee/worldview_config.js"></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
 
         <script type = 'text/javascript'>
+
           $(function(){
 
             var w = new WorldView({ 
@@ -35,11 +34,20 @@
                 }
             });
 
-            w.addVectorMarkers({
-                lonLats: [{lon: 77.6, lat: 12.655}, {lon: 77.688, lat: 12.655}],
-                vectorLayer: w.initVectorLayer()
-            });
+            window.world = w;
+            vectorLayer = w.initVectorLayer("My Markers");
+            
 
+            w.addVectorMarkers({
+                points: [{lon: 77.6, lat: 12.655, name: "t1", description: "d1"}, {lon: 77.688, lat: 12.655, name: "t2", description: "d2"}],
+                vectorLayer: vectorLayer,
+                popups: true,
+                style: {
+                    externalGraphic: "lib/images/marker.png",
+                    graphicHeight: 21,
+                    graphicWidth: 16
+                }
+            });
           });
 
         </script>
