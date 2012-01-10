@@ -3,7 +3,7 @@ root = this
 class WorldView
   constructor: (@mapconfig) ->
     @map = new OpenLayers.Map(@mapconfig.mapid) 
-    @map.addControl new OpenLayers.Control.LayerSwitcher()
+    @map.addControl(new OpenLayers.Control.LayerSwitcher())
     @map.addLayers(WorldView.LayerDefinitions[layer].call(layer, options) for layer, options of @mapconfig.layers)
     @map.setCenter(WorldView.transformToMercator(@map, @mapconfig.lon, @mapconfig.lat), @mapconfig.zoom)
 
@@ -17,6 +17,11 @@ class WorldView
     lonLat = WorldView.transformToMercator(@map, lon, lat)
     feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
     feature
+
+  initToolbar: (toolbarOptions, vectorLayer) -> 
+    for handler in toolbarOptions.handlers || (handler for handler of WorldView.Config.toolbarOptions)
+      @map.addControl(this.drawControl(vectorLayer, handler))
+      registerEventHandlersForToolbarLinks(vectorLayer, handler)
 
   initPopup: (feature) => new OpenLayers.Popup.FramedCloud("chicken", 
     feature.geometry.getBounds().getCenterLonLat(),
@@ -70,5 +75,8 @@ class WorldView
       @map.removePopup(feature.popup)
       feature.popup.destroy()
       delete feature.popup
+
+  drawControl: (vectorLayer, handler) ->
+    new OpenLayers.Control.DrawFeature(vectorLayer, WorldView.Config.toolbarOptions[handler][handler])
 
 root.WorldView = WorldView

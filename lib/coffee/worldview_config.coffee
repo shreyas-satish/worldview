@@ -6,6 +6,21 @@ WorldView.Config =
 
 WorldView.Config.offset = new OpenLayers.Pixel(-(WorldView.Config.size.w/2), -WorldView.Config.size.h)
 
+
+WorldView.Config.toolbarOptions =
+  'point':
+    handler: OpenLayers.Handler.Point
+    id: "wv-toolbar-point"
+
+  'line':
+    handler: OpenLayers.Handler.Path
+    id: "wv-toolbar-line"
+
+  'polygon':
+    handler: OpenLayers.Handler.Polygon
+    id: "wv-toolbar-polygon"
+
+
 WorldView.Config.vectorMarkerStyle =
   externalGraphic: "http://openlayers.org/dev/img/marker.png",
   graphicHeight: 21,
