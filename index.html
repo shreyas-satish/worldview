@@ -29,19 +29,31 @@
             });
 
             window.world = w;
-            vectorLayer = w.initVectorLayer("My Markers");
-            
 
-            w.addVectorMarkers({
+            //delegate to w.initVectorLayer, Instead of passing aroung heavy objects
+            vectorLayer = new WorldView.VectorLayer(w.map);
+
+            // You can define a custom callback for when a marker is selected
+            // vectorLayer.onFeatureSelect = function(event) {
+            //     alert("hola senor");
+            // }
+
+            // You can define a custom callback for when a marker is unselected
+            // vectorLayer.onFeatureUnselect = function(event) {
+            //     alert("bye senor");
+            // }
+
+            
+            vectorLayer.addVectorMarkers({
                 points: [{lon: 77.6, lat: 12.655, name: "t1", description: "d1"}, {lon: 77.688, lat: 12.655, name: "t2", description: "d2"}],
-                vectorLayer: vectorLayer,
-                popups: true,
+                events: true,
                 style: {
                     externalGraphic: "lib/images/marker.png",
                     graphicHeight: 21,
                     graphicWidth: 16
                 }
             });
+
           });
 
         </script>

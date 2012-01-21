@@ -13,70 +13,68 @@ class WorldView
   @transformToMercator: (map, lon, lat) ->
     new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject())
   
-  initVectorMarker: (lon, lat, attributes = {}, style = WorldView.Config.vectorMarkerStyle) -> 
-    lonLat = WorldView.transformToMercator(@map, lon, lat)
-    feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
-    feature
+  onPopupClose: (evt) => @featureControl.unselectAll()
+  
+class WorldView.VectorLayer
 
-  initToolbar: (toolbarOptions, vectorLayer) -> 
-    for handler in toolbarOptions.handlers || (handler for handler of WorldView.Config.toolbarOptions)
-      @map.addControl(this.drawControl(vectorLayer, handler))
-      registerEventHandlersForToolbarLinks(vectorLayer, handler)
+  constructor: (@map, name = "Vector Layer", options = {style: WorldView.Config.vectorMarkerStyle}) ->
+    
+    @vectorLayer = new OpenLayers.Layer.Vector(name, options)
+    @map.addLayer(@vectorLayer)
 
-  initPopup: (feature) => new OpenLayers.Popup.FramedCloud("chicken", 
+  registerEventsOnVectorLayer: () ->
+    featureControl = new OpenLayers.Control.SelectFeature(@vectorLayer)
+
+    @vectorLayer.events.on({
+      'featureselected':   this.onFeatureSelect,
+      'featureunselected': this.onFeatureUnselect
+    })
+
+    @map.addControl(featureControl)        
+    featureControl.activate()
+
+  @initPopup: (feature) => new OpenLayers.Popup.FramedCloud("chicken", 
     feature.geometry.getBounds().getCenterLonLat(),
     new OpenLayers.Size(500,500),
     "<h2>"+feature.attributes.name + "</h2>" + feature.attributes.description,
     null, true, this.onPopupClose
   )
 
-  onPopupClose: (evt) => @featureControl.unselectAll()
+  initVectorMarker: (lon, lat, attributes = {}, style = WorldView.Config.vectorMarkerStyle) -> 
+    lonLat = WorldView.transformToMercator(@map, lon, lat)
+    feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
+    feature
+
   
   addVectorMarker: (vectorMarkerOptions) ->
-    feature = this.initVectorMarker(vectorMarkerOptions.lon, vectorMarkerOptions.lat,
+    feature = @initVectorMarker(vectorMarkerOptions.lon, vectorMarkerOptions.lat,
       vectorMarkerOptions.attributes, vectorMarkerOptions.style)
-    vectorMarkerOptions.vectorLayer.addFeatures([feature])
+    @vectorLayer.addFeatures([feature])
     feature
   
   addVectorMarkers: (markersOptions) ->
-    this.registerEventsOnVectorLayer(markersOptions.vectorLayer) if markersOptions.popups
+    @registerEventsOnVectorLayer(@map) if markersOptions.events
     for point in markersOptions.points
-      this.addVectorMarker({
-        lon: point.lon, lat: point.lat, vectorLayer: markersOptions.vectorLayer,
+      @addVectorMarker({
+        lon: point.lon, lat: point.lat,
         style: markersOptions.style,
         attributes: {name: point.name, description: point.description}
       })
-    
-  registerEventsOnVectorLayer: (vectorLayer) ->
-    @featureControl = new OpenLayers.Control.SelectFeature(vectorLayer)
-
-    vectorLayer.events.on({
-      'featureselected': this.onFeatureSelect, 'featureunselected': this.onFeatureUnselect
-    })
-
-    @map.addControl(@featureControl)        
-    @featureControl.activate()
 
 
-  initVectorLayer: (name = "Vector Layer", options = {style: WorldView.Config.vectorMarkerStyle}) ->
-    vectorLayer = new OpenLayers.Layer.Vector(name, options)
-    @map.addLayer vectorLayer
-    vectorLayer
-
-  onFeatureSelect: (event) =>
+  onFeatureSelect: (event) ->
     feature = event.feature
-    popup = this.initPopup(feature)
+    popup = WorldView.VectorLayer.initPopup(feature)
     feature.popup = popup
     @map.addPopup(popup)
-  
-  onFeatureUnselect: (event) ->
+      
+  onFeatureUnselect: (event) =>
     feature = event.feature
     if feature.popup
       @map.removePopup(feature.popup)
       feature.popup.destroy()
       delete feature.popup
 
-  drawControl: (vectorLayer, handler) ->
-    new OpenLayers.Control.DrawFeature(vectorLayer, WorldView.Config.toolbarOptions[handler][handler])
+
 
 root.WorldView = WorldView
