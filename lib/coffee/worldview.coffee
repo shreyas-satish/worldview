@@ -1,7 +1,23 @@
 class WorldView
   constructor: (@mapconfig) ->
-    @map = new OpenLayers.Map(@mapconfig.mapid) 
-    @map.addControl(new OpenLayers.Control.LayerSwitcher())
+    # @map = new OpenLayers.Map(@mapconfig.mapid) 
+
+    @map = new OpenLayers.Map(
+      document.getElementById(@mapconfig.mapid), {
+      theme: 'lib/css/map.css',
+      projection: "EPSG:900913",
+      numZoomLevels: 15,
+      controls: []
+      }
+    )
+    # @map.addControl(new OpenLayers.Control.LayerSwitcher())
+
+    @map.addControls([
+      new OpenLayers.Control.Navigation(),
+      new OpenLayers.Control.Attribution(),
+      new OpenLayers.Control.PanZoomBar(),
+      new OpenLayers.Control.LayerSwitcher()
+    ])
     @map.addLayers(WorldView.LayerDefinitions[layer].call(layer, options) for layer, options of @mapconfig.layers)
     @map.setCenter(WorldView.transformToMercator(@map, @mapconfig.lon, @mapconfig.lat), @mapconfig.zoom)
 
@@ -161,7 +177,9 @@ WorldView.Config.vectorMarkerStyle =
   graphicWidth: 16,
   graphicOpacity: 1
 
-OpenLayers.ImgPath = 'http://openlayers.org/dev/img/'
+# OpenLayers.ImgPath = 'http://openlayers.org/dev/img/'
+
+OpenLayers.ImgPath = '/home/shreyas/dev/coffeescript/worldview/lib/img/'
 
 WorldView.LayerDefinitions =
   'OSM': -> new OpenLayers.Layer.OSM()

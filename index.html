@@ -8,7 +8,9 @@
         <link rel="stylesheet" href="lib/css/map.css" type="text/css">
         <link rel="stylesheet" href="lib/css/style.css" type="text/css">
         <script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>
-        <script src="http://openlayers.org/dev/OpenLayers.js"></script>
+        <!--<script src="http://openlayers.org/dev/OpenLayers.js"></script>-->
+        <script src="vendor/OpenLayers.js"></script>
+
         <script src="lib/coffee/worldview.js"></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
 
@@ -56,18 +58,21 @@
             //     alert("bye senor");
             // }
 
-            // var p1 = new OpenLayers.Geometry.Point(8638851.1065252 ,1426917.5501132);
-            // var p2 = new OpenLayers.Geometry.Point(8646189.0612396, 1418509.477003);
-            // var p3 = new OpenLayers.Geometry.Point(8605065.9400279 ,1414381.8774762);
+            var p1 = new OpenLayers.Geometry.Point(8638851.1065252 ,1426917.5501132);
+            var p2 = new OpenLayers.Geometry.Point(8646189.0612396, 1418509.477003);
+            var p3 = new OpenLayers.Geometry.Point(8605065.9400279 ,1414381.8774762);
 
            
-            // for (i = 0; i < points.length; i++) {
-            //     vectorLayer.addMarker({
-            //        lon: points[i].lon,
-            //        lat: points[i].lat,
-            //        events: true
-            //     });
-            // }
+            window.points = [{lon: 77.6, lat: 12.655, name: "t1", description: "d1"}, {lon: 77.688, lat: 12.655, name: "t2", description: "d2"}];
+
+                        
+            for (i = 0; i < points.length; i++) {
+                vectorLayer.addMarker({
+                   lon: points[i].lon,
+                   lat: points[i].lat,
+                   events: true
+                });
+            }
 
             
             // vectorLayer.addMarkers({
@@ -99,25 +104,18 @@
                     <img src = "lib/images/pan_on.png" value = "none" onclick="world.toggleControl(this);" />
                 </li>
                 <li>
-                    <img src = "lib/images/marker.png" name = "type" title = "point" id="pointToggle1" onclick="world.toggleControl(this);" />
-
-                    <input type="radio" name="type" value="point" id="pointToggle" onclick="world.toggleControl(this);" />
-                    <label for="pointToggle">draw point</label>
+                    <img src = "lib/img/add_point.png" name = "type" title = "point" id="pointToggle1" onclick="world.toggleControl(this);" />
                 </li>
 
                 <li>
-                    <input type="radio" name="type" value="line" id="lineToggle" onclick="world.toggleControl(this);" />
-                    <label for="lineToggle">draw line</label>
+                    <img src = "lib/img/add_line.png" name = "type" title = "line" id="lineToggle1" onclick="world.toggleControl(this);" />
                 </li>
                 <li>
-                    <input type="radio" name="type" value="polygon" id="polygonToggle" onclick="world.toggleControl(this);" />
-                    <label for="polygonToggle">draw polygon</label>
+                    <img src = "lib/img/add_polygon.png" name = "type" title = "polygon" id="polyToggle1" onclick="world.toggleControl(this);" />
                 </li>
 
                 <li>
-                    <input type="radio" name="type" value="drag" id="dragToggle"
-                           onclick="world.toggleControl(this);" />
-                    <label for="dragToggle">drag feature</label>
+                    <img src = "lib/img/drag_feature.png" name = "type" title = "drag" id="dragToggle1" onclick="world.toggleControl(this);" />
                 </li>
             </ul>
         </div>
