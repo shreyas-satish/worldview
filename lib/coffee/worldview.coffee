@@ -1,6 +1,5 @@
 class WorldView
   constructor: (@mapconfig) ->
-    # @map = new OpenLayers.Map(@mapconfig.mapid) 
 
     @map = new OpenLayers.Map(
       document.getElementById(@mapconfig.mapid), {
@@ -10,7 +9,8 @@ class WorldView
       controls: []
       }
     )
-    # @map.addControl(new OpenLayers.Control.LayerSwitcher())
+
+    @mapID = @mapconfig.mapid
 
     @map.addControls([
       new OpenLayers.Control.Navigation(),
@@ -33,6 +33,10 @@ class WorldView
     new WorldView.VectorLayer(@map)
 
   initToolbar: (options) ->
+    @initToolbarControls(options)
+    @initToolbarDOM()
+    
+  initToolbarControls: (options) ->
     @controls =
       "point": @drawFeature(options.vectorLayer, OpenLayers.Handler.Point, options.callback)
       "line": @drawFeature(options.vectorLayer, OpenLayers.Handler.Path)
@@ -41,7 +45,12 @@ class WorldView
     
     for key of @controls
       @map.addControl(@controls[key])
-
+  
+  initToolbarDOM: () ->
+    div = OpenLayers.Util.createDiv(@map.id,null,null,null,"absolute",null,null,null)
+    div.innerHTML = WorldView.Config.toolbarHTML
+    mapDom = document.getElementById(@mapID)
+    mapDom.insertBefore(div, mapDom.firstChild)
 
   drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
     new OpenLayers.Control.DrawFeature(vectorLayer,
@@ -135,20 +144,8 @@ class WorldView.VectorLayer
     @addFeature(feature)
     feature
 
-
   addFeature: (feature) ->
     @vectorLayer.addFeatures([feature])
-
-
-  addMarkers: (markersOptions) ->
-    @registerEventsOnVectorLayer(@map) if markersOptions.events
-    for point in markersOptions.points
-      @addMarker({
-        lon: point.lon, lat: point.lat,
-        style: markersOptions.style,
-        attributes: {name: point.name, description: point.description}
-      })
-
 
   onFeatureSelect: (event) ->
     feature = event.feature
@@ -180,6 +177,33 @@ WorldView.Config.vectorMarkerStyle =
 # OpenLayers.ImgPath = 'http://openlayers.org/dev/img/'
 
 OpenLayers.ImgPath = '/home/shreyas/dev/coffeescript/worldview/lib/img/'
+
+
+
+
+WorldView.Config.toolbarHTML = 
+  """
+  <div id='wv-toolbar'>
+    <ul id='controlToggle'>
+      <li>
+        <img src = 'lib/images/pan_on.png' value = 'none' onclick='world.toggleControl(this);' />
+      </li>
+      <li>
+        <img src = "lib/img/add_point.png" name = "type" title = "point" id="pointToggle1" onclick="world.toggleControl(this);" />
+      </li>
+      <li>
+        <img src = "lib/img/add_line.png" name = "type" title = "line" id="lineToggle1" onclick="world.toggleControl(this);" />
+      </li>
+      <li>
+        <img src = "lib/img/add_polygon.png" name = "type" title = "polygon" id="polyToggle1" onclick="world.toggleControl(this);" />
+      </li>
+
+      <li>
+        <img src = "lib/img/drag_feature.png" name = "type" title = "drag" id="dragToggle1" onclick="world.toggleControl(this);" />
+      </li>
+    </ul>
+ </div>
+ """
 
 WorldView.LayerDefinitions =
   'OSM': -> new OpenLayers.Layer.OSM()
