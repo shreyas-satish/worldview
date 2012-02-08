@@ -186,7 +186,7 @@ WorldView.Config.toolbarHTML =
   <div id='wv-toolbar'>
     <ul id='controlToggle'>
       <li>
-        <img src = 'lib/images/pan_on.png' value = 'none' onclick='world.toggleControl(this);' />
+        <img src = 'lib/img/pan_on.png' value = 'none' onclick='world.toggleControl(this);' />
       </li>
       <li>
         <img src = "lib/img/add_point.png" name = "type" title = "point" id="pointToggle1" onclick="world.toggleControl(this);" />
