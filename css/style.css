@@ -15,12 +15,20 @@ a img {border:none;}
 /**
  * Basic Typography
  */
+
+html {
+ width: 100%;
+ height: 100%;
+}
+
 body {
     font-family: "Lucida Grande", Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
     font-size: 80%;
     color: #222;
     background: #fff;
     margin: 1em 1.5em;
+    width: 100%;
+    height: 100%;
 }
 pre, code {
     margin: 1.5em 0;
@@ -73,10 +81,16 @@ h6 {
  * Map Examples Specific
  */
 .smallmap {
-    width: 512px;
-    height: 256px;
-    border: 1px solid #ccc;
+/*    width: 812px;
+    height: 556px;
+*/    border: 1px solid #ccc;
 }
+
+#map {
+    width: 90%;
+    height: 90%;
+}
+
 #tags {
     display: none;
 }
