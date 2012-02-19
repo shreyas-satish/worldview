@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
         <title>OpenLayers Google (v3) Layer Example</title>
-        <link rel="stylesheet" href="css/map.css" type="text/css">
+        <!-- <link rel="stylesheet" href="css/map.css" type="text/css"> -->
         <link rel="stylesheet" href="css/style.css" type="text/css">
         <!--<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false"></script>-->
         <!--<script src="http://openlayers.org/dev/OpenLayers.js"></script>-->
@@ -28,7 +28,7 @@
             var w = new WorldView({ 
                 mapid: 'map',
                 imagesPath: "/home/shreyas/dev/coffeescript/worldview/img/",
-                cssPath: "css/",
+                cssPath: "css/map.css",
 
                 layers: {
                     'OSM': {},
@@ -40,15 +40,41 @@
                 initialZoom: 13
             });
 
+            // var w1 = new WorldView({ 
+            //     mapid: 'map1',
+            //     imagesPath: "/home/shreyas/dev/coffeescript/worldview/img/",
+            //     cssPath: "css/map.css",
+
+            //     layers: {
+            //         'OSM': {},
+            //     },
+            //     initialCoordinates: {
+            //         lon: 77.6,
+            //         lat: 12.655
+            //     },
+            //     initialZoom: 13
+            // });
+
+
 
             window.world = w;
+            // window.world1 = w1;
+
 
             vectorLayer = w.initVectorLayer();
+            // vectorLayer1 = w1.initVectorLayer();
+
 
             world.initToolbar({
                 vectorLayer: vectorLayer.vectorLayer
                 // callback: pfa
             });
+
+            // world1.initToolbar({
+            //     vectorLayer: vectorLayer1.vectorLayer
+            //     // callback: pfa
+            // });
+
 
             
             // You can define a custom callback for when a marker is selected
