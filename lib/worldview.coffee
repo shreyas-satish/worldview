@@ -42,54 +42,53 @@ class WorldView.Toolbar
   constructor: (options, map, mapID) ->
     @map = map
     @mapID = mapID
+    @toolbarID = @mapID + "-toolbar"
     @initToolbarDOM()
     @initToolbarControls(options, @map)
 
   initToolbarDOM: () ->
-    div = OpenLayers.Util.createDiv("wv-toolbar",null,null,null,"absolute",null,null,null)
+    div = OpenLayers.Util.createDiv(@toolbarID,null,null,null,"absolute",null,null,null)
+    div.setAttribute("class","wv-toolbar")
     ul = document.createElement("ul")
-    ul.setAttribute("id", 'controlToggle')
+    ul.setAttribute("id", @toolbarID + '-controlToggle')
     div.appendChild(ul)
     mapDom = document.getElementById(@mapID)
     mapDom.insertBefore(div, mapDom.firstChild)
 
   initToolbarControls: (options) ->
     @toolbarItems =
-      # "navigate":
-      #   id: "navigate"
-      #   value: "none"
-      #   img: "pan_on.png"
+      "navigate":
+        id: @toolbarID + "-navigate"
+        title: "navigate"
+        img: "pan_on.png"
 
       "point":
-        id: "point"
+        id: @toolbarID + "-point"
         title: "point"
-        img: "marker_rounded_violet.png"
+        img: "add_point.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Point, options.callback)
       
       "line":
-        id: "line"
+        id: @toolbarID + "-line"
         title: "line"
-        img: "draw_line.png"
+        img: "add_line.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Path, options.callback)
 
       "polygon":
-        id: "polygon"
+        id: @toolbarID + "-polygon"
         title: "polygon"
         img: "add_polygon.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Polygon, options.callback)
 
       "drag":
-        id: "drag"
+        id: @toolbarID + "-drag"
         title: "drag"
         img: "drag_feature.png"
         control: new OpenLayers.Control.DragFeature(options.vectorLayer) 
     
-    
-    @createToolbarItem(navigate_button)
-
     for item of @toolbarItems
       @createToolbarItem(item)
-      @map.addControl(@toolbarItems[item].control)
+      @map.addControl(@toolbarItems[item].control) if @toolbarItems[item].control
   
   createToolbarItem: (item) ->
     item = @toolbarItems[item]
@@ -99,14 +98,15 @@ class WorldView.Toolbar
     im.setAttribute("title", item.title)
     im.setAttribute("id", item.id)
     li.appendChild(im)
-    document.getElementById('controlToggle').appendChild(li)
+    document.getElementById(@toolbarID + '-controlToggle').appendChild(li)
     @registerEventListenersForToolbarItems(this, item.id)
 
 
   drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
     new OpenLayers.Control.DrawFeature(vectorLayer,
-      handler,
-      {'featureAdded': callback}
+      handler, {
+        'featureAdded': callback
+      }
     )
 
     
@@ -121,7 +121,7 @@ class WorldView.Toolbar
       control = @toolbarItems[item].control
       if control and ((element.value is item) or (element.title is item))
         control.activate()
-      else
+      else if control
         control.deactivate()
 
 
@@ -241,6 +241,24 @@ WorldView.Config.styleMap = new OpenLayers.StyleMap(
     fillColor: "#ff0000"
     fillOpacity: 0
     cursor: "pointer"
+    externalGraphic: OpenLayers.ImgPath + "img/marker_rounded_violet.png"
+    graphicHeight: 21,
+    graphicWidth: 16,
+    graphicOpacity: 1
+
+  ),
+  "temporary": new OpenLayers.Style(
+    strokeColor: "#ff0000"
+    strokeOpacity: .7
+    strokeWidth: 1
+    fillColor: "#ff0000"
+    fillOpacity: 0
+    cursor: "pointer"
+    externalGraphic: OpenLayers.ImgPath + "img/marker.png"
+    graphicHeight: 21,
+    graphicWidth: 16,
+    graphicOpacity: 1
+
   ),
   "select": new OpenLayers.Style(
     strokeColor: "#0033ff",
