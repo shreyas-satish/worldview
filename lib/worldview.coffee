@@ -29,6 +29,12 @@ class WorldView
   @transformToMercator: (map, lon, lat) ->
     new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject())
   
+  @createOlPoint: (lon, lat) ->
+    new OpenLayers.Geometry.Point(lon, lat)
+
+  @transformPoint: (map, point) ->
+    point.transform new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()
+
   onPopupClose: (evt) => @featureControl.unselectAll()
 
   initVectorLayer: ->
@@ -173,7 +179,14 @@ class WorldView.VectorLayer
     @addFeature(feature)
     feature
   
-  addPolygon: (points) ->
+  generatePoints: (pointsOptions) ->
+    points = []
+    for i of pointsOptions
+      points.push WorldView.transformPoint(@map, WorldView.createOlPoint(pointsOptions[i].lon, pointsOptions[i].lat))
+    points
+
+  addPolygon: (pointsOptions) ->
+    points = @generatePoints(pointsOptions)
     linear_ring = new OpenLayers.Geometry.LinearRing(points);
     feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.Polygon([linear_ring]),
@@ -183,8 +196,9 @@ class WorldView.VectorLayer
     @addFeature(feature)
     feature
 
-  addLine: (points) ->
-    linefeature = new OpenLayers.Feature.Vector(
+  addLine: (pointsOptions) ->
+    points = @generatePoints(pointsOptions)
+    feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.LineString(points),
       null,
       {}
@@ -193,8 +207,9 @@ class WorldView.VectorLayer
     feature
 
   addCircle: (circleOptions) -> 
+    point = WorldView.transformPoint(@map, WorldView.createOlPoint(circleOptions.lon, circleOptions.lat))
     circle = OpenLayers.Geometry.Polygon.createRegularPolygon(
-      circleOptions.point,
+      point,
       circleOptions.radius,
       20
     )
