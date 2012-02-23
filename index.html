@@ -66,6 +66,7 @@
 
             var pfa = function(feature) {
                 alert(feature.geometry);
+                alert(feature.geometry.getBounds());
             }
 
 
@@ -114,6 +115,21 @@
             //     radius: 10000
             // });
             
+            // var poly_geom = "POLYGON((8631656.4712389 1424118.0439527,8643007.3699377 1423124.3625851,8632917.6822054 1418633.687174,8631656.4712389 1424118.0439527))";
+            
+            // var poly_bounds = [8641249.3182874,1418499.9223745,8644746.3123309,1420085.9907112]
+            // var line_geom = "LINESTRING(8644765.421588 1420984.1257934,8638382.9297271 1418920.32603)";
+
+            // var line_bounds = [8638382.9297271,1418920.32603,8644765.421588,1420984.1257934];
+
+            // vectorLayer.addFeatureFromGeometry(line_geom);
+            // var in_options = { 
+            //   'internalProjection': new OpenLayers.Projection("EPSG:4326"),
+            //   'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            // };
+            // var fea= new OpenLayers.Format.WKT(in_options).read(data);
+            // vectorLayer.vectorLayer.addFeatures([fea]);
+
             for (i = 0; i < points.length; i++) {
                 vectorLayer.addMarker({
                    lon: points[i].lon,

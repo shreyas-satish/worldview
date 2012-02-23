@@ -90,11 +90,14 @@ class WorldView.Toolbar
         id: @toolbarID + "-drag"
         title: "drag"
         img: "drag_feature.png"
-        control: new OpenLayers.Control.DragFeature(options.vectorLayer) 
+        control: new OpenLayers.Control.DragFeature(options.vectorLayer)
+        tc: false
     
     for item of @toolbarItems
       @createToolbarItem(item)
       @map.addControl(@toolbarItems[item].control) if @toolbarItems[item].control
+
+    @toolbarItems["drag"].control.activate()
   
   createToolbarItem: (item) ->
     item = @toolbarItems[item]
@@ -105,7 +108,7 @@ class WorldView.Toolbar
     im.setAttribute("id", item.id)
     li.appendChild(im)
     document.getElementById(@toolbarID + '-controlToggle').appendChild(li)
-    @registerEventListenersForToolbarItems(this, item.id)
+    @registerEventListenersForToolbarItems(this, item.id) unless item.tc
 
 
   drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
@@ -127,7 +130,7 @@ class WorldView.Toolbar
       control = @toolbarItems[item].control
       if control and ((element.value is item) or (element.title is item))
         control.activate()
-      else if control
+      else if control and item.tc is false
         control.deactivate()
 
 
@@ -195,6 +198,15 @@ class WorldView.VectorLayer
     )
     @addFeature(feature)
     feature
+
+  
+  addFeatureFromGeometry: (geometry, bounds) ->
+    options =
+      internalProjection: new OpenLayers.Projection("EPSG:4326")
+      externalProjection: new OpenLayers.Projection("EPSG:4326")
+
+    @addFeature new OpenLayers.Format.WKT(options).read(geometry)
+    @map.zoomToExtent(bounds) if bounds
 
   addLine: (pointsOptions) ->
     points = @generatePoints(pointsOptions)
