@@ -22,6 +22,7 @@ class WorldView
     ])
     @map.addLayers(WorldView.LayerDefinitions[layer].call(layer, options) for layer, options of @mapconfig.layers)
     @map.setCenter(WorldView.transformToMercator(@map, @mapconfig.initialCoordinates.lon, @mapconfig.initialCoordinates.lat), @mapconfig.initialZoom)
+    @initStyles()
 
   setMapCenter: (lon, lat, zoom) ->
     @map.setCenter(WorldView.transformToMercator(@map, lon, lat), zoom)    
@@ -35,13 +36,50 @@ class WorldView
   @transformPoint: (map, point) ->
     point.transform new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()
 
-  onPopupClose: (evt) => @featureControl.unselectAll()
-
   initVectorLayer: ->
     new WorldView.VectorLayer(@map)
 
   initToolbar: (options) ->
     new WorldView.Toolbar(options, @map, @mapID)
+
+  initStyles: () ->
+    WorldView.Config.styleMap = new OpenLayers.StyleMap(
+      "default": new OpenLayers.Style(
+        strokeColor: "#ff0000"
+        strokeOpacity: .7
+        strokeWidth: 1
+        fillColor: "#ff0000"
+        fillOpacity: 0
+        cursor: "pointer"
+        externalGraphic: OpenLayers.ImgPath + "grey-marker.png"
+        graphicHeight: 15,
+        graphicWidth: 15,
+        graphicOpacity: 1
+
+      ),
+      # "temporary": new OpenLayers.Style(
+      #   strokeColor: "#ff0000"
+      #   strokeOpacity: .7
+      #   strokeWidth: 1
+      #   fillColor: "#ff0000"
+      #   fillOpacity: 0
+      #   cursor: "pointer"
+      #   # externalGraphic: OpenLayers.ImgPath + "marker.png"
+      #   graphicHeight: 21,
+      #   graphicWidth: 16,
+      #   graphicOpacity: 1
+
+      # ),
+      "select": new OpenLayers.Style(
+        strokeColor: "#0033ff",
+        strokeOpacity: .7,
+        strokeWidth: 2,
+        fillColor: "#0033ff",
+        fillOpacity: 0,
+        graphicZIndex: 2,
+        cursor: "move"
+      )
+    )
   
 class WorldView.Toolbar
 
@@ -62,43 +100,45 @@ class WorldView.Toolbar
     mapDom.insertBefore(div, mapDom.firstChild)
 
   initToolbarControls: (options) ->
-    @toolbarItems =
+    @allToolbarItems =
       "navigate":
         id: @toolbarID + "-navigate"
         title: "navigate"
-        img: "pan_on.png"
+        img: "pan_off.png"
 
       "point":
         id: @toolbarID + "-point"
         title: "point"
-        img: "add_point.png"
+        img: "grey-marker.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Point, options.callback)
       
       "line":
         id: @toolbarID + "-line"
         title: "line"
-        img: "add_line.png"
+        img: "grey-line.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Path, options.callback)
 
       "polygon":
         id: @toolbarID + "-polygon"
         title: "polygon"
-        img: "add_polygon.png"
+        img: "grey-polygon.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Polygon, options.callback)
 
-      "drag":
-        id: @toolbarID + "-drag"
-        title: "drag"
-        img: "drag_feature.png"
-        control: new OpenLayers.Control.DragFeature(options.vectorLayer)
-        tc: false
-    
+    @toolbarItems = {}
+    if options.controls
+      for control of options.controls
+        @toolbarItems[control] = @allToolbarItems[control]
+    else
+      @toolbarItems = @allToolbarItems
+
+    dragControl = new OpenLayers.Control.DragFeature(options.vectorLayer)
+    @map.addControl dragControl
+    dragControl.activate()
+
     for item of @toolbarItems
       @createToolbarItem(item)
       @map.addControl(@toolbarItems[item].control) if @toolbarItems[item].control
 
-    @toolbarItems["drag"].control.activate()
-  
   createToolbarItem: (item) ->
     item = @toolbarItems[item]
     li = document.createElement("li")
@@ -112,11 +152,16 @@ class WorldView.Toolbar
 
 
   drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
-    new OpenLayers.Control.DrawFeature(vectorLayer,
+    wvToolbar = this
+    df = new OpenLayers.Control.DrawFeature(vectorLayer,
       handler, {
-        'featureAdded': callback
+        'featureAdded': @afterFeatureAdd
       }
     )
+
+  afterFeatureAdd: (feature) =>
+    @toggleControl({title: "navigate"})
+    WorldView.Toolbar.featureAdded(feature) if WorldView.Toolbar.featureAdded
 
     
   registerEventListenersForToolbarItems: (obj, id) ->
@@ -125,16 +170,14 @@ class WorldView.Toolbar
       obj.toggleControl(el)
     ), false
 
-  toggleControl: (element) ->
+  toggleControl: (element) =>
     for item of @toolbarItems
       control = @toolbarItems[item].control
       if control and ((element.value is item) or (element.title is item))
         control.activate()
-      else if control and item.tc is false
+      else if control
         control.deactivate()
 
-
-  
 class WorldView.VectorLayer
 
   constructor: (@map, name = "Vector Layer", options = {styleMap: WorldView.Config.styleMap}) ->
@@ -169,6 +212,8 @@ class WorldView.VectorLayer
       null, true, this.onPopupClose
     )
 
+  onPopupClose: (evt) => @featureControl.unselectAll()
+  
   initMarker: (lon, lat, attributes = {}, style = WorldView.Config.vectorMarkerStyle) -> 
     lonLat = WorldView.transformToMercator(@map, lon, lat)
     feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
@@ -258,45 +303,6 @@ WorldView.Config.vectorMarkerStyle =
   graphicHeight: 21,
   graphicWidth: 16,
   graphicOpacity: 1
-
-
-WorldView.Config.styleMap = new OpenLayers.StyleMap(
-  "default": new OpenLayers.Style(
-    strokeColor: "#ff0000"
-    strokeOpacity: .7
-    strokeWidth: 1
-    fillColor: "#ff0000"
-    fillOpacity: 0
-    cursor: "pointer"
-    externalGraphic: OpenLayers.ImgPath + "img/marker_rounded_violet.png"
-    graphicHeight: 21,
-    graphicWidth: 16,
-    graphicOpacity: 1
-
-  ),
-  "temporary": new OpenLayers.Style(
-    strokeColor: "#ff0000"
-    strokeOpacity: .7
-    strokeWidth: 1
-    fillColor: "#ff0000"
-    fillOpacity: 0
-    cursor: "pointer"
-    externalGraphic: OpenLayers.ImgPath + "img/marker.png"
-    graphicHeight: 21,
-    graphicWidth: 16,
-    graphicOpacity: 1
-
-  ),
-  "select": new OpenLayers.Style(
-    strokeColor: "#0033ff",
-    strokeOpacity: .7,
-    strokeWidth: 2,
-    fillColor: "#0033ff",
-    fillOpacity: 0,
-    graphicZIndex: 2,
-    cursor: "pointer"
-  )
-)
 
 
 WorldView.LayerDefinitions =
