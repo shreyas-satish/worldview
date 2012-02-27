@@ -64,16 +64,30 @@
             vectorLayer = w.initVectorLayer();
             // vectorLayer1 = w1.initVectorLayer();
 
-            var pfa = function(feature) {
+            WorldView.Toolbar.featureAdded = function(feature) {
                 alert(feature.geometry);
-                alert(feature.geometry.getBounds());
+                // alert(feature.geometry.getBounds());
             }
 
 
-            world.initToolbar({
+            var wvtb = world.initToolbar({
                 vectorLayer: vectorLayer.vectorLayer,
-                callback: pfa
+                controls: {
+                    "navigate": {},
+                    "point": {},
+                    "line": {},
+                    "polygon": {}
+                }
             });
+
+            window.po = function(object) {
+                var output = '';
+                for (property in object) {
+                  output += property + ': ' + object[property]+'; ';
+                }
+                alert(output);
+            }
+
 
             // world1.initToolbar({
             //     vectorLayer: vectorLayer1.vectorLayer
