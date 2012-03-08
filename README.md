@@ -10,3 +10,6 @@ WorldView provides an abstraction over OpenLayers with a set of clear & consiste
 
 worldview.js objects wrap openlayers objects. A corollary would mean, if you aren't able able to perform a case that is not supported natively by worldview.js, worldview.js objects give you access to OpenLayers objects using which you can perform operations that are possible using OpenLayers.
 
+### Documentation
+
+Find more detailed documentation [here](https://worldview.guidekit.com/docs/worldview) .
