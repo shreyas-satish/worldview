@@ -36,8 +36,8 @@ class WorldView
   @transformPoint: (map, point) ->
     point.transform new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()
 
-  initVectorLayer: ->
-    new WorldView.VectorLayer(@map)
+  # initVectorLayer: ()->
+  #   new WorldView.VectorLayer(@map, options)
 
   initToolbar: (options) ->
     new WorldView.Toolbar(options, @map, @mapID)
@@ -51,8 +51,8 @@ class WorldView
         fillColor: "#ff0000"
         fillOpacity: 0
         cursor: "pointer"
-        externalGraphic: OpenLayers.ImgPath + "grey-marker.png"
-        graphicHeight: 15,
+        externalGraphic: OpenLayers.ImgPath + "gv_marker.png"
+        graphicHeight: 25,
         graphicWidth: 15,
         graphicOpacity: 1
 
@@ -80,7 +80,7 @@ class WorldView
         cursor: "move"
       )
     )
-  
+
 class WorldView.Toolbar
 
   constructor: (options, map, mapID) ->
@@ -104,25 +104,30 @@ class WorldView.Toolbar
       "navigate":
         id: @toolbarID + "-navigate"
         title: "navigate"
-        img: "pan_off.png"
+        img: "navigate.png"
 
       "point":
         id: @toolbarID + "-point"
         title: "point"
-        img: "grey-marker.png"
+        img: "gv_marker.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Point, options.callback)
       
       "line":
         id: @toolbarID + "-line"
         title: "line"
-        img: "grey-line.png"
+        img: "gv_drawline.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Path, options.callback)
 
       "polygon":
         id: @toolbarID + "-polygon"
         title: "polygon"
-        img: "grey-polygon.png"
+        img: "gv_square.png"
         control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Polygon, options.callback)
+      "drag":
+        id: @toolbarID + "-drag"
+        title: "drag"
+        img: "gv_drag.png"
+        control: new OpenLayers.Control.DragFeature(options.vectorLayer)
 
     @toolbarItems = {}
     if options.controls
@@ -130,10 +135,6 @@ class WorldView.Toolbar
         @toolbarItems[control] = @allToolbarItems[control]
     else
       @toolbarItems = @allToolbarItems
-
-    dragControl = new OpenLayers.Control.DragFeature(options.vectorLayer)
-    @map.addControl dragControl
-    dragControl.activate()
 
     for item of @toolbarItems
       @createToolbarItem(item)
@@ -152,8 +153,7 @@ class WorldView.Toolbar
 
 
   drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
-    wvToolbar = this
-    df = new OpenLayers.Control.DrawFeature(vectorLayer,
+    new OpenLayers.Control.DrawFeature(vectorLayer,
       handler, {
         'featureAdded': @afterFeatureAdd
       }
@@ -180,17 +180,18 @@ class WorldView.Toolbar
 
 class WorldView.VectorLayer
 
-  constructor: (@map, name = "Vector Layer", options = {styleMap: WorldView.Config.styleMap}) ->
+  constructor: (@map, options = {events: false}, olOptions = {styleMap: WorldView.Config.styleMap}) ->
    
-    @vectorLayer = new OpenLayers.Layer.Vector(name, options)
+    @vectorLayer = new OpenLayers.Layer.Vector(name || "Vector Layer", olOptions)
+    @registerEventsOnVectorLayer(options) if options.events
     @map.addLayer(@vectorLayer)
 
-  registerEventsOnVectorLayer: () ->
+  registerEventsOnVectorLayer: (options) ->
     featureControl = new OpenLayers.Control.SelectFeature(@vectorLayer)
 
     @vectorLayer.events.on({
-      'featureselected':   this.onFeatureSelect,
-      'featureunselected': this.onFeatureUnselect
+      'featureselected':   options.featureSelected,
+      'featureunselected': options.featureUnselected
     })
 
     @map.addControl(featureControl)        
@@ -221,7 +222,6 @@ class WorldView.VectorLayer
 
   
   addMarker: (vectorMarkerOptions) ->
-    @registerEventsOnVectorLayer(@map) if vectorMarkerOptions.events
     feature = @initMarker(vectorMarkerOptions.lon, vectorMarkerOptions.lat,
       vectorMarkerOptions.attributes, vectorMarkerOptions.style)
     @addFeature(feature)
@@ -277,19 +277,6 @@ class WorldView.VectorLayer
   addFeature: (feature) ->
     @vectorLayer.addFeatures([feature])
 
-  onFeatureSelect: (event) ->
-    feature = event.feature
-    popup = WorldView.VectorLayer.initPopup(feature)
-    feature.popup = popup
-    @map.addPopup(popup)
-      
-  onFeatureUnselect: (event) =>
-    feature = event.feature
-    if feature.popup
-      @map.removePopup(feature.popup)
-      feature.popup.destroy()
-      delete feature.popup
-
 WorldView.Config =
   lat: 0.0
   lon: 0.0
@@ -299,7 +286,7 @@ WorldView.Config =
 WorldView.Config.offset = new OpenLayers.Pixel(-(WorldView.Config.size.w/2), -WorldView.Config.size.h)
 
 WorldView.Config.vectorMarkerStyle =
-  externalGraphic: "http://openlayers.org/dev/img/marker.png",
+  externalGraphic: "gv_marker.png",
   graphicHeight: 21,
   graphicWidth: 16,
   graphicOpacity: 1

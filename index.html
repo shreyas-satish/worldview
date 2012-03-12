@@ -60,8 +60,23 @@
             window.world = w;
             // window.world1 = w1;
 
+            // You can define a custom callback for when a marker is selected
+            window.onFeatureSelect = function(event) {
+                alert("Feature selected");
+            }
 
-            vectorLayer = w.initVectorLayer();
+            // You can define a custom callback for when a marker is unselected
+            window.onFeatureUnselect = function(event) {
+                alert("Feature unselected");
+            }
+
+
+            // vectorLayer = w.initVectorLayer({events: true});
+            var vectorLayer = new WorldView.VectorLayer(w.map, {
+                events: true,
+                featureSelected: onFeatureSelect,
+                featureUnselected: onFeatureUnselect,
+            });
             // vectorLayer1 = w1.initVectorLayer();
 
             WorldView.Toolbar.featureAdded = function(feature) {
@@ -76,7 +91,8 @@
                     "navigate": {},
                     "point": {},
                     "line": {},
-                    "polygon": {}
+                    "polygon": {},
+                    "drag": {}
                 }
             });
 
@@ -94,19 +110,6 @@
             //     // callback: pfa
             // });
 
-
-            
-            // You can define a custom callback for when a marker is selected
-            // vectorLayer.onFeatureSelect = function(event) {
-            //     alert("hola senor");
-            // }
-
-
-
-            // You can define a custom callback for when a marker is unselected
-            // vectorLayer.onFeatureUnselect = function(event) {
-            //     alert("bye senor");
-            // }
 
             var p1 = new OpenLayers.Geometry.Point(8638851.1065252 ,1426917.5501132);
             var p2 = new OpenLayers.Geometry.Point(8646189.0612396, 1418509.477003);
@@ -150,9 +153,9 @@
                    lat: points[i].lat,
                    events: true,
                    style: {
-                       externalGraphic: "img/marker_rounded_violet.png",
-                       graphicHeight: 16,
-                       graphicWidth: 16,
+                       externalGraphic: "img/gv_marker.png",
+                       graphicHeight: 25,
+                       graphicWidth: 15,
                        // graphicOpacity: 1
                    }
                 });
