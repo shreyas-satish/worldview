@@ -20,9 +20,6 @@
 
         <script src="lib/worldview.js"></script>
 
-        <script src="json.js"></script>
-
-
         <script type = 'text/javascript'>
 
             var w = new WorldView({ 
@@ -37,7 +34,7 @@
                     lon: 77.6,
                     lat: 12.655
                 },
-                initialZoom: 13
+                initialZoom: 10
             });
 
             // var w1 = new WorldView({ 
@@ -124,22 +121,47 @@
             window.points = [{lon: 77.6, lat: 12.655, name: "t1", description: "d1"}, {lon: 77.688, lat: 12.655, name: "t2", description: "d2"}, {lon:77.55,lat:12.55}];
 
 
-            // vectorLayer.addLine(points);
-            // vectorLayer.addPolygon(points);
+            // var linef = vectorLayer.addLine({
+            //   points: points,
+            //   style: {
+            //     strokeColor: "#ff0000",
+            //     strokeOpacity: 1.0
+            //   }
+            // });
+
+            // var polyf = vectorLayer.addPolygon({
+            //   points: points,
+            //   style: {
+            //     strokeColor: "#ff0000",
+            //     strokeOpacity: 1.0,
+            //     fillColor: "#ff0000",
+            //     fillOpacity: 0.5
+            //   }
+            // });
+
+            // var polyf = vectorLayer.addPolygon(points);
             // vectorLayer.addCircle({
             //     lon: points[1].lon,
             //     lat: points[1].lat,
-            //     radius: 10000
+            //     radius: 10000,
+            //     style: {
+            //       strokeColor: "#ff0000",
+            //       strokeOpacity: 1.0,
+            //       fillColor: "#0000ff",
+            //       fillOpacity: 0.5
+            //     }
             // });
             
-            // var poly_geom = "POLYGON((8631656.4712389 1424118.0439527,8643007.3699377 1423124.3625851,8632917.6822054 1418633.687174,8631656.4712389 1424118.0439527))";
+            var poly_geom = "POLYGON((8631656.4712389 1424118.0439527,8643007.3699377 1423124.3625851,8632917.6822054 1418633.687174,8631656.4712389 1424118.0439527))";
             
-            // var poly_bounds = [8641249.3182874,1418499.9223745,8644746.3123309,1420085.9907112]
+            var poly_bounds = [8641249.3182874,1418499.9223745,8644746.3123309,1420085.9907112]
             // var line_geom = "LINESTRING(8644765.421588 1420984.1257934,8638382.9297271 1418920.32603)";
 
             // var line_bounds = [8638382.9297271,1418920.32603,8644765.421588,1420984.1257934];
 
             // vectorLayer.addFeatureFromGeometry(line_geom);
+            // vectorLayer.addFeatureFromGeometry(poly_geom, poly_bounds);
+
             // var in_options = { 
             //   'internalProjection': new OpenLayers.Projection("EPSG:4326"),
             //   'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -147,19 +169,32 @@
             // var fea= new OpenLayers.Format.WKT(in_options).read(data);
             // vectorLayer.vectorLayer.addFeatures([fea]);
 
+            htmlContent = "worldview.js objects wrap openlayers objects. A corollary would mean, iff you aren't able able to perform a case that is not supported natively by worldview.js, worldview.js objects give you access to OpenLayers objects using which you can perform operations that are possible using OpenLayers."
+
+            var markers = [];
+
             for (i = 0; i < points.length; i++) {
-                vectorLayer.addMarker({
+                var marker = vectorLayer.addMarker({
                    lon: points[i].lon,
                    lat: points[i].lat,
-                   events: true,
                    style: {
-                       externalGraphic: "img/gv_marker.png",
+                       externalGraphic: "img/marker.png",
                        graphicHeight: 25,
                        graphicWidth: 15,
-                       // graphicOpacity: 1
+                       graphicOpacity: 1.0
                    }
                 });
+                markers.push(marker);
             }
+            var fm = markers[0];
+            var popContent = "<div style='color:red;margin-top:20px;'>"+htmlContent + "</div>";
+            // var pop = vectorLayer.addPopup({
+            //   feature: fm,
+            //   content: popContent,
+            //   width: 300,
+            //   height: 300
+            // });
+            // pop.autoSize = false
 
         </script>
 

@@ -36,6 +36,9 @@ class WorldView
   @transformPoint: (map, point) ->
     point.transform new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject()
 
+  @createLonLat: (x, y) ->
+    new OpenLayers.LonLat(x, y)
+
   # initVectorLayer: ()->
   #   new WorldView.VectorLayer(@map, options)
 
@@ -197,33 +200,48 @@ class WorldView.VectorLayer
     @map.addControl(featureControl)        
     featureControl.activate()
 
-  @initPopup: (feature) => 
+  # POPUPS
+
+  @initPopup: (feature, content, width, height) => 
+    OpenLayers.Popup.FramedCloud::autoSize = false
     
-    # popup = new OpenLayers.Popup("chicken",
-    #                    feature.geometry.getBounds().getCenterLonLat(),
-    #                    new OpenLayers.Size(100,100),
-    #                    "example popup",
-    #                    true)
-
-
-    new OpenLayers.Popup.FramedCloud("popup-" + feature.attributes.name, 
+    new OpenLayers.Popup.FramedCloud("popup-" + feature.id, 
       feature.geometry.getBounds().getCenterLonLat(),
-      new OpenLayers.Size(500,500),
-      "<h2>"+feature.attributes.name + "</h2>" + feature.attributes.description,
+      new OpenLayers.Size(width,height),
+      content,
       null, true, this.onPopupClose
     )
 
+  addPopup: (options) ->
+    popup = WorldView.VectorLayer.initPopup(options.feature, options.content || "", options.width || 200, options.height || 200)
+    options.feature.popup = popup
+    @map.addPopup(popup)
+    popup
+
+  removePopup: (feature) ->
+    if feature.popup
+      @map.removePopup(feature.popup)
+      feature.popup.destroy()
+      delete feature.popup
+
+
   onPopupClose: (evt) => @featureControl.unselectAll()
   
-  initMarker: (lon, lat, attributes = {}, style = WorldView.Config.vectorMarkerStyle) -> 
-    lonLat = WorldView.transformToMercator(@map, lon, lat)
+  # FEATURES
+
+  initMarker: (lon, lat, attributes = {}, style = WorldView.Config.vectorMarkerStyle, transform = true) -> 
+    if transform == true
+      lonLat = WorldView.transformToMercator(@map, lon, lat)
+    else
+      lonLat = WorldView.createLonLat(lon, lat)
+   
     feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat), attributes, style)
     feature
 
   
   addMarker: (vectorMarkerOptions) ->
     feature = @initMarker(vectorMarkerOptions.lon, vectorMarkerOptions.lat,
-      vectorMarkerOptions.attributes, vectorMarkerOptions.style)
+      vectorMarkerOptions.attributes, vectorMarkerOptions.style, vectorMarkerOptions.transform)
     @addFeature(feature)
     feature
   
@@ -233,13 +251,13 @@ class WorldView.VectorLayer
       points.push WorldView.transformPoint(@map, WorldView.createOlPoint(pointsOptions[i].lon, pointsOptions[i].lat))
     points
 
-  addPolygon: (pointsOptions) ->
-    points = @generatePoints(pointsOptions)
+  addPolygon: (options) ->
+    points = @generatePoints(options.points)
     linear_ring = new OpenLayers.Geometry.LinearRing(points);
     feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.Polygon([linear_ring]),
       null,
-      {}
+      options.style || {}
     )
     @addFeature(feature)
     feature
@@ -253,12 +271,12 @@ class WorldView.VectorLayer
     @addFeature new OpenLayers.Format.WKT(options).read(geometry)
     @map.zoomToExtent(bounds) if bounds
 
-  addLine: (pointsOptions) ->
-    points = @generatePoints(pointsOptions)
+  addLine: (options) ->
+    points = @generatePoints(options.points)
     feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.LineString(points),
       null,
-      {}
+      options.style || {}
     )
     @addFeature(feature)
     feature
@@ -270,12 +288,18 @@ class WorldView.VectorLayer
       circleOptions.radius,
       20
     )
-    feature = new OpenLayers.Feature.Vector(circle)
+    feature = new OpenLayers.Feature.Vector(
+      circle,
+      null,
+      circleOptions.style || {}
+    )
     @addFeature(feature)
     feature
 
   addFeature: (feature) ->
     @vectorLayer.addFeatures([feature])
+
+# WorldView Configuration 
 
 WorldView.Config =
   lat: 0.0
