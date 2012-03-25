@@ -52,6 +52,7 @@ var vectorLayer = new WorldView.VectorLayer(w.map, {
 	featureUnselected: onFeatureUnselect,
 });
 ```
+
 ### Drawing a Marker with a latitude/longitude pair
 
 ```javacript
@@ -61,6 +62,7 @@ vectorLayer.addMarker({
 });
 
 ```
+
 ### Drawing a Line with a list of latitude/longitude pairs
 
 ```javascript
@@ -71,6 +73,7 @@ var points = [
 
 vectorLayer.addLine(points);
 ```
+
 ### Drawing a Polygon with a list of latitude/longitude pairs
 
 ```javascript
@@ -82,6 +85,7 @@ var points = [
 
 vectorLayer.addPolygon(points);
 ```
+
 ### Drawing a Line from a geometry and bounds
 
 ```javascript
@@ -89,6 +93,7 @@ var line_geom = "LINESTRING(8644765.421588 1420984.1257934,8638382.9297271 14189
 var line_bounds = [8638382.9297271,1418920.32603,8644765.421588,1420984.1257934];
 vectorLayer.addFeatureFromGeometry(lineGeom, lineBounds); // lineBounds is optional
 ```
+
 ### Drawing a Polygon from a geometry and bounds
 
 ```javascript
@@ -98,7 +103,7 @@ vectorLayer.addFeatureFromGeometry(polygonGeom, polygonBounds); // polygonBounds
 
 ```
 
-### The Toolbar
+## The Toolbar
 
 ```javascript
 worldview.initToolbar({
