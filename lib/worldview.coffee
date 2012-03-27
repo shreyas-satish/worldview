@@ -52,7 +52,7 @@ class WorldView
         strokeOpacity: .7
         strokeWidth: 1
         fillColor: "#ff0000"
-        fillOpacity: 0
+        fillOpacity: 0.5
         cursor: "pointer"
         externalGraphic: OpenLayers.ImgPath + "gv_marker.png"
         graphicHeight: 25,
@@ -103,6 +103,8 @@ class WorldView.Toolbar
     mapDom.insertBefore(div, mapDom.firstChild)
 
   initToolbarControls: (options) ->
+    vectorLayer = options.vectorLayer.vectorLayer
+
     @allToolbarItems =
       "navigate":
         id: @toolbarID + "-navigate"
@@ -113,19 +115,19 @@ class WorldView.Toolbar
         id: @toolbarID + "-point"
         title: "point"
         img: "gv_marker.png"
-        control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Point, options.callback)
+        control: @drawFeature(vectorLayer, OpenLayers.Handler.Point)
       
       "line":
         id: @toolbarID + "-line"
         title: "line"
         img: "gv_drawline.png"
-        control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Path, options.callback)
+        control: @drawFeature(vectorLayer, OpenLayers.Handler.Path)
 
       "polygon":
         id: @toolbarID + "-polygon"
         title: "polygon"
         img: "gv_square.png"
-        control: @drawFeature(options.vectorLayer, OpenLayers.Handler.Polygon, options.callback)
+        control: @drawFeature(vectorLayer, OpenLayers.Handler.Polygon)
       "drag":
         id: @toolbarID + "-drag"
         title: "drag"
@@ -155,7 +157,7 @@ class WorldView.Toolbar
     @registerEventListenersForToolbarItems(this, item.id) unless item.tc
 
 
-  drawFeature: (vectorLayer, handler, callback = -> alert "no callback") => 
+  drawFeature: (vectorLayer, handler) => 
     new OpenLayers.Control.DrawFeature(vectorLayer,
       handler, {
         'featureAdded': @afterFeatureAdd
