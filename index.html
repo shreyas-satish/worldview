@@ -57,15 +57,6 @@
             window.world = w;
             // window.world1 = w1;
 
-            // You can define a custom callback for when a marker is selected
-            window.onFeatureSelect = function(event) {
-                alert("Feature selected");
-            }
-
-            // You can define a custom callback for when a marker is unselected
-            window.onFeatureUnselect = function(event) {
-                alert("Feature unselected");
-            }
 
 
             // vectorLayer = w.initVectorLayer({events: true});
@@ -76,14 +67,22 @@
             });
             // vectorLayer1 = w1.initVectorLayer();
 
-            WorldView.Toolbar.featureAdded = function(feature) {
-                alert(feature.geometry);
-                // alert(feature.geometry.getBounds());
+            // You can define a custom callback for when a marker is selected
+            function onFeatureSelect(event) {
+                window.fs_event = event;
+
+                alert("Feature selected");
             }
+
+            // You can define a custom callback for when a marker is unselected
+            function onFeatureUnselect(event) {
+                alert("Feature unselected");
+            }
+            
 
 
             var wvtb = world.initToolbar({
-                vectorLayer: vectorLayer.vectorLayer,
+                vectorLayer: vectorLayer,
                 controls: {
                     "navigate": {},
                     "point": {},
@@ -92,6 +91,11 @@
                     "drag": {}
                 }
             });
+
+            WorldView.Toolbar.featureAdded = function(feature) {
+                alert(feature.geometry);
+                // alert(feature.geometry.getBounds());
+            }
 
             window.po = function(object) {
                 var output = '';
@@ -102,21 +106,10 @@
             }
 
 
-            // world1.initToolbar({
-            //     vectorLayer: vectorLayer1.vectorLayer
-            //     // callback: pfa
-            // });
-
-
             var p1 = new OpenLayers.Geometry.Point(8638851.1065252 ,1426917.5501132);
             var p2 = new OpenLayers.Geometry.Point(8646189.0612396, 1418509.477003);
             var p3 = new OpenLayers.Geometry.Point(8605065.9400279 ,1414381.8774762);
 
-            // var l1 = new OpenLayers.Geometry.Point(W77.6 ,12.655);
-            // var l2 = new OpenLayers.Geometry.Point(W77.688, 12.655);
-            // var l3 = new OpenLayers.Geometry.Point(W77.55 , 12.55);
-
-            
            
             window.points = [{lon: 77.6, lat: 12.655, name: "t1", description: "d1"}, {lon: 77.688, lat: 12.655, name: "t2", description: "d2"}, {lon:77.55,lat:12.55}];
 
@@ -139,7 +132,6 @@
             //   }
             // });
 
-            // var polyf = vectorLayer.addPolygon(points);
             // vectorLayer.addCircle({
             //     lon: points[1].lon,
             //     lat: points[1].lat,
@@ -188,14 +180,13 @@
             }
             var fm = markers[0];
             var popContent = "<div style='color:red;margin-top:20px;'>"+htmlContent + "</div>";
-            // var pop = vectorLayer.addPopup({
-            //   feature: fm,
-            //   content: popContent,
-            //   width: 300,
-            //   height: 300
-            // });
-            // pop.autoSize = false
-
+            var pop = vectorLayer.addPopup({
+              feature: fm,
+              content: popContent,
+              width: 300,
+              height: 300
+            });
+            
         </script>
 
     </body>

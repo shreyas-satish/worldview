@@ -20,7 +20,8 @@ var worldview = new WorldView({
 
   layers: {
       'OSM': {},
-      'Google Streets': {}
+      'Google Streets': {},
+      'Bing Road': {apiKey = yourApiKey}
   },
   initialCoordinates: {
       lon: 77.6,
@@ -30,8 +31,18 @@ var worldview = new WorldView({
 });
 
 ```
+The worldview object created wraps the OpenLayers.Map.OpenLayers.Class.initialize object and can be accessed by 
+
+```javascript
+  worldview.map
+```
+
+The first layer in the layers object will be shown by default.
+
 
 ## Vector Layer
+
+The Vector Layer is overlayed on the base map and is primarily used to display vector features such as markers, lines, polygons and circles.
 
 ### Initialization
 
@@ -46,22 +57,47 @@ var onFeatureUnselect = function(event) {
   alert("Feature " + event.feature.geometry + " unselected")
 }
 
-var vectorLayer = new WorldView.VectorLayer(w.map, {
-    events: true,
+var vectorLayer = new WorldView.VectorLayer(worldview.map, {
+  events: true,
 	featureSelected: onFeatureSelect,
 	featureUnselected: onFeatureUnselect,
 });
 ```
 
+The vectorLayer object created here creates a OpenLayers.Layer.Vector object and is accessible by
+
+```javascript
+  ol_vectorLayer = vectorLayer.vectorLayer;
+```
+
+The onFeatureSelect and onFeatureUnselect callbacks are optional. The callback receives the defualt OpenLayers event object as the parameter. Importantly, to access the feature that fired the callback ;
+
+```javascript
+  feature = event.feature;
+```
+
+The feature is a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+
+
 ### Drawing a Marker with a latitude/longitude pair
 
+The default values are indicated in the comments.
+
 ```javacript
-vectorLayer.addMarker({
-  lon: 77.55,
-  lat: 12.55
+var marker = vectorLayer.addMarker({
+  lon: points[i].lon,
+  lat: points[i].lat,
+  style: {
+     externalGraphic: "img/marker.png", // "img/marker.png"
+     graphicHeight: 25,  // 25
+     graphicWidth: 15,   // 15
+     graphicOpacity: 1.0 // 1.0
+  }
 });
 
 ```
+
+This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 ### Drawing a Line with a list of latitude/longitude pairs
 
@@ -71,7 +107,14 @@ var points = [
   {lon: 77.688, lat: 12.655}
 ];
 
-vectorLayer.addLine(points);
+var linef = vectorLayer.addLine({
+  points: points,
+  style: {
+    strokeColor: "#ff0000", // "#ff0000"
+    strokeOpacity: 1.0      // 0.7
+  }
+});
+
 ```
 
 ### Drawing a Polygon with a list of latitude/longitude pairs
@@ -83,7 +126,48 @@ var points = [
   {lon:77.55, lat:12.55}
 ];
 
-vectorLayer.addPolygon(points);
+var polygon = vectorLayer.addPolygon({
+  points: points,
+  style: {
+    strokeColor: "#ff0000", // "#ff0000"
+    strokeOpacity: 1.0,     // 1.0
+    fillColor: "#ff0000",   // "#ff0000"
+    fillOpacity: 0.5        // 0.5
+  }
+});
+
+```
+
+### Drawing a Circle with a latitude/longitude pair and a radius
+
+```javascript
+var lon = 77.6, lat = 12.655, radius = 10000;
+
+vectorLayer.addCircle({
+  lon: lon,
+  lat: lat,
+  radius: radius,
+  style: {
+    strokeColor: "#ff0000", // "#ff0000"       
+    strokeOpacity: 1.0,     // 1.0
+    fillColor: "#0000ff",   // "#0000ff"
+    fillOpacity: 0.5        // 0.5
+  }
+});
+
+```
+
+### Attaching a Popup to a feature
+
+```javascript
+var popContent = "<div style='color:red;margin-top:20px;'>I'm a popup</div>";
+
+var pop = vectorLayer.addPopup({
+  feature: fm,
+  content: popContent,
+  width: 300,
+  height: 300
+});
 ```
 
 ### Drawing a Line from a geometry and bounds
@@ -105,9 +189,13 @@ vectorLayer.addFeatureFromGeometry(polygonGeom, polygonBounds); // polygonBounds
 
 ## The Toolbar
 
+The Toolbar is native to WorldView, in that, it does not wrap any OpenLayers object. This Toolbar is configurable. You can decide which controls you need in the toolbar & the styling that needs to be applied. 
+
+To initialize the toolbar, you need to first create a vector layer (as illustrated above).
+
 ```javascript
 worldview.initToolbar({
-  vectorLayer: vectorLayer.vectorLayer,
+  vectorLayer: vectorLayer,
   controls: {
     "navigate": {},
     "point": {},
@@ -117,3 +205,12 @@ worldview.initToolbar({
 });
 
 ```
+
+You can also register a callback that needs to be fired when a feature (point, line, polygon) is added to the map with toolbar.
+
+```javascript
+WorldView.Toolbar.featureAdded = function(feature) {
+  console.log(feature.geometry);
+}
+```
+
