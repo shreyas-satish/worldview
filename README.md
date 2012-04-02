@@ -21,7 +21,7 @@ var worldview = new WorldView({
   layers: {
       'OSM': {},
       'Google Streets': {},
-      'Bing Road': {apiKey = yourApiKey}
+      'Bing Road': {apiKey: yourApiKey}
   },
   initialCoordinates: {
       lon: 77.6,
@@ -31,14 +31,14 @@ var worldview = new WorldView({
 });
 
 ```
-The worldview object created wraps the OpenLayers.Map.OpenLayers.Class.initialize object and can be accessed by 
-
-```javascript
-  worldview.map
-```
 
 The first layer in the layers object will be shown by default.
 
+The worldview object created wraps the [OpenLayers.Map](http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html) object and can be accessed :
+
+```javascript
+  var olMap = worldview.map;
+```
 
 ## Vector Layer
 
@@ -64,19 +64,19 @@ var vectorLayer = new WorldView.VectorLayer(worldview.map, {
 });
 ```
 
-The vectorLayer object created here creates a OpenLayers.Layer.Vector object and is accessible by
+The vectorLayer object created here creates a OpenLayers.Layer.Vector object and is accessible :
 
 ```javascript
-  ol_vectorLayer = vectorLayer.vectorLayer;
+  var olVectorLayer = vectorLayer.vectorLayer;
 ```
 
 The onFeatureSelect and onFeatureUnselect callbacks are optional. The callback receives the defualt OpenLayers event object as the parameter. Importantly, to access the feature that fired the callback ;
 
 ```javascript
-  feature = event.feature;
+  var feature = event.feature;
 ```
 
-The feature is a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+feature here is a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 
 ### Drawing a Marker with a latitude/longitude pair
@@ -84,9 +84,11 @@ The feature is a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/file
 The default values are indicated in the comments.
 
 ```javacript
+var lon = 77.6, lat = 12.655;
+
 var marker = vectorLayer.addMarker({
-  lon: points[i].lon,
-  lat: points[i].lat,
+  lon: lon,
+  lat: lat,
   style: {
      externalGraphic: "img/marker.png", // "img/marker.png"
      graphicHeight: 25,  // 25
@@ -107,7 +109,7 @@ var points = [
   {lon: 77.688, lat: 12.655}
 ];
 
-var linef = vectorLayer.addLine({
+var line = vectorLayer.addLine({
   points: points,
   style: {
     strokeColor: "#ff0000", // "#ff0000"
@@ -116,6 +118,8 @@ var linef = vectorLayer.addLine({
 });
 
 ```
+
+This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 ### Drawing a Polygon with a list of latitude/longitude pairs
 
@@ -138,6 +142,8 @@ var polygon = vectorLayer.addPolygon({
 
 ```
 
+This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+
 ### Drawing a Circle with a latitude/longitude pair and a radius
 
 ```javascript
@@ -157,18 +163,32 @@ vectorLayer.addCircle({
 
 ```
 
+This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+
 ### Attaching a Popup to a feature
 
+Popups can be either added in an adhoc fashion to vector features or be registered in the feature callbacks (For instance, shown when selected, hidden when un-selected). 
+
+The popContent defined below can be any HTML content. Ensure you strip out any potentially dangerous tags from the HTML.
+
 ```javascript
+
+var markerWithPopup = vectorLayer.addMarker({
+  lon: lon,
+  lat: lat,
+)};
+
 var popContent = "<div style='color:red;margin-top:20px;'>I'm a popup</div>";
 
 var pop = vectorLayer.addPopup({
-  feature: fm,
+  feature: markerWithPopup,
   content: popContent,
   width: 300,
   height: 300
 });
 ```
+
+The addPopup function returns a [OpenLayers.Popup.FramedCloud](http://dev.openlayers.org/releases/OpenLayers-2.6/doc/apidocs/files/OpenLayers/Popup/FramedCloud-js.html) object.
 
 ### Drawing a Line from a geometry and bounds
 
@@ -191,7 +211,7 @@ vectorLayer.addFeatureFromGeometry(polygonGeom, polygonBounds); // polygonBounds
 
 The Toolbar is native to WorldView, in that, it does not wrap any OpenLayers object. This Toolbar is configurable. You can decide which controls you need in the toolbar & the styling that needs to be applied. 
 
-To initialize the toolbar, you need to first create a vector layer (as illustrated above).
+To initialize the toolbar, you need to first create a vector layer (as illustrated earlier).
 
 ```javascript
 worldview.initToolbar({
