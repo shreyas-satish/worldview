@@ -114,25 +114,25 @@ class WorldView.Toolbar
       "point":
         id: @toolbarID + "-point"
         title: "point"
-        img: "gv_marker.png"
+        img: "marker.png"
         control: @drawFeature(vectorLayer, OpenLayers.Handler.Point)
       
       "line":
         id: @toolbarID + "-line"
         title: "line"
-        img: "gv_drawline.png"
+        img: "line.png"
         control: @drawFeature(vectorLayer, OpenLayers.Handler.Path)
 
       "polygon":
         id: @toolbarID + "-polygon"
         title: "polygon"
-        img: "gv_square.png"
+        img: "square.png"
         control: @drawFeature(vectorLayer, OpenLayers.Handler.Polygon)
       "drag":
         id: @toolbarID + "-drag"
         title: "drag"
-        img: "gv_drag.png"
-        control: new OpenLayers.Control.DragFeature(options.vectorLayer)
+        img: "drag.png"
+        control: new OpenLayers.Control.DragFeature(vectorLayer)
 
     @toolbarItems = {}
     if options.controls
