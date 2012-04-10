@@ -4,8 +4,8 @@ class WorldView
     @map = new OpenLayers.Map(
       document.getElementById(@mapconfig.mapid), {
       theme: @mapconfig.cssPath,
-      projection: "EPSG:900913",
-      numZoomLevels: 15,
+      projection: @mapconfig.projection || "EPSG:900913",
+      numZoomLevels: @mapconfig.numZoomLevels || 15,
       controls: []
       }
     )
@@ -54,7 +54,7 @@ class WorldView
         fillColor: "#ff0000"
         fillOpacity: 0.5
         cursor: "pointer"
-        externalGraphic: OpenLayers.ImgPath + "gv_marker.png"
+        externalGraphic: OpenLayers.ImgPath + "marker.png"
         graphicHeight: 25,
         graphicWidth: 15,
         graphicOpacity: 1
