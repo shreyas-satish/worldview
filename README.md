@@ -2,7 +2,7 @@
 
 WorldView provides an abstraction over OpenLayers with a set of clear & consistent APIs that allows you to perform common usecases with maps. 
 
-See a [demo](http://shreyas-satish.github.com/worldview/demo).
+See a <a href = 'http://shreyas-satish.github.com/worldview/demo' target="_blank">demo</a>.
 
 UseCases
 
