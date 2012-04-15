@@ -258,7 +258,7 @@ class WorldView.VectorLayer
     linear_ring = new OpenLayers.Geometry.LinearRing(points);
     feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.Polygon([linear_ring]),
-      null,
+      options.attributes || {},
       options.style || {}
     )
     @addFeature(feature)
@@ -277,7 +277,7 @@ class WorldView.VectorLayer
     points = @generatePoints(options.points)
     feature = new OpenLayers.Feature.Vector(
       new OpenLayers.Geometry.LineString(points),
-      null,
+      options.attributes || {},
       options.style || {}
     )
     @addFeature(feature)

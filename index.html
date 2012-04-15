@@ -70,8 +70,7 @@
             // You can define a custom callback for when a marker is selected
             function onFeatureSelect(event) {
                 window.fs_event = event;
-
-                alert("Feature selected");
+                alert(event.feature.attributes.type + " Feature selected");
             }
 
             // You can define a custom callback for when a marker is unselected
@@ -119,6 +118,9 @@
             //   style: {
             //     strokeColor: "#ff0000",
             //     strokeOpacity: 1.0
+            //   },
+            //   attributes: {
+            //     type: "Line"
             //   }
             // });
 
@@ -129,6 +131,9 @@
             //     strokeOpacity: 1.0,
             //     fillColor: "#ff0000",
             //     fillOpacity: 0.5
+            //   },
+            //   attributes: {
+            //     type: "Poly"
             //   }
             // });
 
@@ -174,6 +179,9 @@
                        graphicHeight: 25,
                        graphicWidth: 15,
                        graphicOpacity: 1.0
+                   },
+                   attributes: {
+                     type: "Marker"
                    }
                 });
                 markers.push(marker);
