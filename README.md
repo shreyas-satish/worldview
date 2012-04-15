@@ -1,6 +1,6 @@
 # WorldView
 
-WorldView is an easier way to use OpenLayers. It comes with a set of easy-to-use APIs and a configurable Drawing Toolbar. 
+WorldView is an easier way to use <a href = "http://openlayers.org" target="_blank">OpenLayers</a>. It comes with a set of easy-to-use APIs and a configurable Drawing Toolbar. 
 
 A few use cases supported out of the box :
 
