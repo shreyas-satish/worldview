@@ -1,22 +1,22 @@
 # WorldView
 
-WorldView provides an abstraction over OpenLayers with a set of clear & consistent APIs that allows you to perform common usecases with maps. 
+WorldView is an easier way to use OpenLayers. It comes with a set of easy-to-use APIs and a configurable Drawing Toolbar. 
+
+A few use cases supported out of the box :
+
+1. Display a basic map. You can choose between Google, Bing, OSM & so on, basically whatever OpenLayers supports.
+2. Show features such as markers, lines, polygons, circles on the map, with customizable callbacks and popups.
+3. Add interaction to a map with an editing toolbar which allows you to dynamically add/move markers, lines and polygons. You also get to register a callback when a feature (marker, line or polygon) is added.
 
 See a <a href = 'http://shreyas-satish.github.com/worldview/demo' target="_blank">demo</a>.
 
-UseCases
-
-1. Displaying a basic map. You can choose between Google, Bing, OSM & so on, basically whatever OpenLayers supports.
-2. Showing markers, polygons, lines on the map, with customizable callbacks.
-3. Adding interaction to a map with a toolbar which allows you to dynamically add/move markers, polygons, lines etc
-
-worldview.js objects wrap/return OpenLayers objects. A corollary would mean, if you aren't able able to perform a case that is not supported natively by worldview.js, worldview.js objects give you access to OpenLayers objects using which you can perform operations that are possible using OpenLayers.
+WorldView wraps OpenLayers objects where a wrapper makes sense, in that you would have access to the underlying OpenLayers object. Other times, it returns OpenLayers objects. The idea being, if you aren't able to perform a case that is not supported natively by WorldView, WorldView objects give you access to OpenLayers objects (by wrapping or returning them), using which you can perform cases that are possible using OpenLayers.
 
 ## Installing WorldView
 
 Download the OpenLayers.js file from vendor/ and the worldview.js from lib/ into your app's javascripts folder.
 
-One caveat is, you need to include the OpenLayers.js _before_ the worldview.js file.
+Ensure you include the OpenLayers.js _before_ the worldview.js file.
 
 Eg: 
 
@@ -28,7 +28,7 @@ Eg:
 
 Download the img/ folder. You're free to rename this folder if you want.
 
-Download the map.css. Make sure you grep through this file and change the image paths appropriately.
+Download the map.css. Make sure you grep through this file and change the image paths appropriately (Not to worry, there aren't many).
 
 
 ## Creating a WorldView
@@ -53,9 +53,9 @@ var worldview = new WorldView({
 
 ```
 
-The first layer in the layers object will be shown by default.
+The first layer in the layers object, in this case OpenStreetMap, will be shown by default.
 
-The worldview object created wraps the [OpenLayers.Map](http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html) object and can be accessed :
+The worldview object created, wraps the [OpenLayers.Map](http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html) object and can be accessed :
 
 ```javascript
   var olMap = worldview.map;
@@ -78,20 +78,20 @@ var onFeatureUnselect = function(event) {
   console.log("Feature " + event.feature.geometry + " unselected")
 }
 
-var vectorLayer = new WorldView.VectorLayer(worldview.map, {
+var myVectorLayer = new WorldView.VectorLayer(worldview.map, {
   events: true,
   featureSelected: onFeatureSelect,
   featureUnselected: onFeatureUnselect,
 });
 ```
 
-The vectorLayer object created here creates a OpenLayers.Layer.Vector object and is accessible :
+The vectorLayer object created here wraps the OpenLayers.Layer.Vector object and is accessible :
 
 ```javascript
-  var olVectorLayer = vectorLayer.vectorLayer;
+  var olVectorLayer = myVectorLayer.vectorLayer;
 ```
 
-The onFeatureSelect and onFeatureUnselect callbacks are optional. The callback receives the defualt OpenLayers event object as the parameter. Importantly, to access the feature that fired the callback ;
+The onFeatureSelect and onFeatureUnselect callbacks are optional. The callback receives the default OpenLayers event object as the parameter. Importantly, to access the feature that fired the callback ;
 
 ```javascript
   var feature = event.feature;
@@ -123,9 +123,9 @@ var marker = vectorLayer.addMarker({
 
 ```
 
-This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+This method returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
-The attributes object is an optional you could pass into the addMarker function to store some information that you would access to later, for instance, to show the name of the location when a marker is selected.
+The attributes object is an optional object which you could pass into the addMarker method to store some information that you would need access to later, for instance, to show the name of the location when a marker is selected.
 
 ### Drawing a Line with a list of latitude/longitude pairs
 
@@ -145,7 +145,7 @@ var line = vectorLayer.addLine({
 
 ```
 
-This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+This method returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 ### Drawing a Polygon with a list of latitude/longitude pairs
 
@@ -168,7 +168,7 @@ var polygon = vectorLayer.addPolygon({
 
 ```
 
-This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+This method returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 ### Drawing a Circle with a latitude/longitude pair and a radius
 
@@ -189,7 +189,7 @@ vectorLayer.addCircle({
 
 ```
 
-This function returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
+This method returns a [OpenLayers.Feature.Vector](http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html) object.
 
 ### Attaching a Popup to a feature
 
@@ -214,7 +214,7 @@ var pop = vectorLayer.addPopup({
 });
 ```
 
-The addPopup function returns a [OpenLayers.Popup.FramedCloud](http://dev.openlayers.org/releases/OpenLayers-2.6/doc/apidocs/files/OpenLayers/Popup/FramedCloud-js.html) object.
+The addPopup method returns a [OpenLayers.Popup.FramedCloud](http://dev.openlayers.org/releases/OpenLayers-2.6/doc/apidocs/files/OpenLayers/Popup/FramedCloud-js.html) object.
 
 ### Drawing a Line from a geometry and bounds
 
@@ -260,3 +260,6 @@ WorldView.Toolbar.featureAdded = function(feature) {
 }
 ```
 
+## Version
+
+1.0.0
