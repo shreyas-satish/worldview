@@ -24,8 +24,11 @@ class WorldView
     @map.setCenter(WorldView.transformToMercator(@map, @mapconfig.initialCoordinates.lon, @mapconfig.initialCoordinates.lat), @mapconfig.initialZoom)
     @initStyles()
 
-  setMapCenter: (lon, lat, zoom) ->
-    @map.setCenter(WorldView.transformToMercator(@map, lon, lat), zoom)    
+  setMapCenter: (lon, lat, zoom, transform = true) ->
+    if transform is true
+      @map.setCenter(WorldView.transformToMercator(@map, lon, lat), zoom)
+    else
+      @map.setCenter(WorldView.createLonLat(lon, lat), zoom)
 
   @transformToMercator: (map, lon, lat) ->
     new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject())
