@@ -252,8 +252,8 @@ class WorldView.VectorLayer
   
   generatePoints: (pointsOptions) ->
     points = []
-    for i of pointsOptions
-      points.push WorldView.transformPoint(@map, WorldView.createOlPoint(pointsOptions[i].lon, pointsOptions[i].lat))
+    for point of pointsOptions
+      points.push WorldView.transformPoint(@map, WorldView.createOlPoint(point.lon, point.lat))
     points
 
   addPolygon: (options) ->
