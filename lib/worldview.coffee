@@ -1,25 +1,18 @@
 class WorldView
   constructor: (@mapconfig) ->
 
+    OpenLayers.ImgPath = @mapconfig.imagesPath || 'http://openlayers.org/dev/img/'
+
     @map = new OpenLayers.Map(
       document.getElementById(@mapconfig.mapid), {
       theme: @mapconfig.cssPath,
       projection: @mapconfig.projection || "EPSG:900913",
-      numZoomLevels: @mapconfig.numZoomLevels || 15,
-      controls: []
+      numZoomLevels: @mapconfig.numZoomLevels || 15
       }
     )
 
-    OpenLayers.ImgPath = @mapconfig.imagesPath || 'http://openlayers.org/dev/img/'
-
     @mapID = @mapconfig.mapid
-
-    @map.addControls([
-      new OpenLayers.Control.Navigation(),
-      new OpenLayers.Control.Attribution(),
-      new OpenLayers.Control.PanZoomBar(),
-      new OpenLayers.Control.LayerSwitcher()
-    ])
+    @map.addControls(@mapconfig.controls || [new OpenLayers.Control.LayerSwitcher()]);
     @map.addLayers(WorldView.LayerDefinitions[layer].call(layer, options) for layer, options of @mapconfig.layers)
     @map.setCenter(WorldView.transformToMercator(@map, @mapconfig.initialCoordinates.lon, @mapconfig.initialCoordinates.lat), @mapconfig.initialZoom)
     @initStyles()
@@ -63,19 +56,20 @@ class WorldView
         graphicOpacity: 1
 
       ),
-      # "temporary": new OpenLayers.Style(
-      #   strokeColor: "#ff0000"
-      #   strokeOpacity: .7
-      #   strokeWidth: 1
-      #   fillColor: "#ff0000"
-      #   fillOpacity: 0
-      #   cursor: "pointer"
-      #   # externalGraphic: OpenLayers.ImgPath + "marker.png"
-      #   graphicHeight: 21,
-      #   graphicWidth: 16,
-      #   graphicOpacity: 1
 
-      # ),
+      "temporary": new OpenLayers.Style(
+        strokeColor: "#ff0000"
+        strokeOpacity: .7
+        strokeWidth: 1
+        fillColor: "#ff0000"
+        fillOpacity: 0.5
+        cursor: "pointer"
+        externalGraphic: OpenLayers.ImgPath + "marker.png"
+        graphicHeight: 25,
+        graphicWidth: 15,
+        graphicOpacity: 1
+      ),
+
       "select": new OpenLayers.Style(
         strokeColor: "#0033ff",
         strokeOpacity: .7,
@@ -337,7 +331,7 @@ WorldView.LayerDefinitions =
     {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
   )
 
-  'Yahoo': -> new OpenLayers.Layer.Yahoo("Yahoo")
+  # 'Yahoo': -> new OpenLayers.Layer.Yahoo("Yahoo")
   
   'Bing Road': (options) -> new OpenLayers.Layer.Bing({name: "Road", key: options.apiKey, type: "Road" })
   
@@ -345,6 +339,6 @@ WorldView.LayerDefinitions =
   
   'Bing Aerial': (options) -> new OpenLayers.Layer.Bing({name: "Aerial", key: options.apiKey, type: "Aerial"})
   
-  'WMS': -> new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'})
+  # 'WMS': -> new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'})
 
 window.WorldView = WorldView
