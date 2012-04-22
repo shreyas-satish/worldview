@@ -38,17 +38,17 @@ var worldview = new WorldView({
   mapid: 'map',
   imagesPath: "/path/to/images/",
   cssPath: "/path/to/map.css",
-
+  
   layers: {
       'OSM': {},
       'Google Streets': {},
-      'Bing Road': {apiKey: yourApiKey}
   },
   initialCoordinates: {
       lon: 77.6,
       lat: 12.655
   },
-  initialZoom: 13
+  numZoomLevels: 16 // 15,
+  initialZoom: 13,
 });
 
 ```
