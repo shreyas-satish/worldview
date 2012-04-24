@@ -86,7 +86,7 @@ class WorldView.Toolbar
   constructor: (options, map, mapID) ->
     @map = map
     @mapID = mapID
-    @toolbarID = @mapID + "-toolbar"
+    @toolbarID = @mapID + "-toolbar" + (options.id || "")
     @initToolbarDOM()
     @initToolbarControls(options, @map)
 
@@ -246,7 +246,7 @@ class WorldView.VectorLayer
   
   generatePoints: (pointsOptions) ->
     points = []
-    for point of pointsOptions
+    for point in pointsOptions
       points.push WorldView.transformPoint(@map, WorldView.createOlPoint(point.lon, point.lat))
     points
 
