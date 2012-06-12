@@ -8,7 +8,7 @@ A few use cases supported out of the box :
 2. Show features such as markers, lines, polygons, circles on the map, with customizable callbacks and popups.
 3. Add interaction to a map with an drawing toolbar which allows you to dynamically add/move markers, lines and polygons. You also get to register a callback when a feature (marker, line or polygon) is added.
 
-See a <a href = 'http://shreyas-satish.github.com/worldview/demo' target="_blank">demo</a>.
+See a <a href = 'http://shreyas.io/demos/worldview' target="_blank">demo</a>.
 
 WorldView wraps OpenLayers objects where a wrapper makes sense, in that you would have access to the underlying OpenLayers object. Other times, it returns OpenLayers objects. The idea is, if you aren't able to perform a case that is not supported natively by WorldView, WorldView objects give you access to OpenLayers objects (by wrapping or returning them), using which you can perform cases that _are_ possible using OpenLayers.
 
