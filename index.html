@@ -1,0 +1,320 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>WorldView by shreyas-satish</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>WorldView</h1>
+        <p>A small library on top of Openlayers, that makes using maps easy.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/shreyas-satish/worldview" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/shreyas-satish/worldview/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/shreyas-satish/worldview/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>WorldView</h1>
+
+<p>WorldView provides an abstraction over OpenLayers with a set of clear &amp; consistent APIs that allows you to perform common usecases with maps. </p>
+
+<p>UseCases</p>
+
+<ol>
+<li>Displaying a basic map. You can choose between Google, Bing, OSM &amp; so on, basically whatever OpenLayers supports.</li>
+<li>Showing markers, polygons, lines on the map, with customizable callbacks.</li>
+<li>Adding interaction to a map with a toolbar which allows you to dynamically add/move markers, polygons, lines etc</li>
+</ol><p>worldview.js objects wrap openlayers objects. A corollary would mean, if you aren't able able to perform a case that is not supported natively by worldview.js, worldview.js objects give you access to OpenLayers objects using which you can perform operations that are possible using OpenLayers.</p>
+
+<h2>Creating a WorldView</h2>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">worldview</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WorldView</span><span class="p">({</span> 
+  <span class="nx">mapid</span><span class="o">:</span> <span class="s1">'map'</span><span class="p">,</span>
+  <span class="nx">imagesPath</span><span class="o">:</span> <span class="s2">"/path/to/images/"</span><span class="p">,</span>
+  <span class="nx">cssPath</span><span class="o">:</span> <span class="s2">"/path/to/map.css"</span><span class="p">,</span>
+
+  <span class="nx">layers</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">'OSM'</span><span class="o">:</span> <span class="p">{},</span>
+      <span class="s1">'Google Streets'</span><span class="o">:</span> <span class="p">{},</span>
+      <span class="s1">'Bing Road'</span><span class="o">:</span> <span class="p">{</span><span class="nx">apiKey</span><span class="o">:</span> <span class="nx">yourApiKey</span><span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">initialCoordinates</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">lon</span><span class="o">:</span> <span class="mf">77.6</span><span class="p">,</span>
+      <span class="nx">lat</span><span class="o">:</span> <span class="mf">12.655</span>
+  <span class="p">},</span>
+  <span class="nx">initialZoom</span><span class="o">:</span> <span class="mi">13</span>
+<span class="p">});</span>
+
+</pre>
+</div>
+
+
+<p>The first layer in the layers object will be shown by default.</p>
+
+<p>The worldview object created wraps the <a href="http://dev.openlayers.org/docs/files/OpenLayers/Map-js.html">OpenLayers.Map</a> object and can be accessed :</p>
+
+<div class="highlight">
+<pre>  <span class="kd">var</span> <span class="nx">olMap</span> <span class="o">=</span> <span class="nx">worldview</span><span class="p">.</span><span class="nx">map</span><span class="p">;</span>
+</pre>
+</div>
+
+
+<h2>Vector Layer</h2>
+
+<p>The Vector Layer is overlayed on the base map and is primarily used to display vector features such as markers, lines, polygons and circles.</p>
+
+<h3>Initialization</h3>
+
+<div class="highlight">
+<pre><span class="c1">// Custom callback for when a feature is selected</span>
+<span class="kd">var</span> <span class="nx">onFeatureSelect</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="s2">"Feature "</span> <span class="o">+</span> <span class="nx">event</span><span class="p">.</span><span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span> <span class="o">+</span> <span class="s2">" selected"</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Custom callback for when a feature is unselected</span>
+<span class="kd">var</span> <span class="nx">onFeatureUnselect</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="s2">"Feature "</span> <span class="o">+</span> <span class="nx">event</span><span class="p">.</span><span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span> <span class="o">+</span> <span class="s2">" unselected"</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">vectorLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WorldView</span><span class="p">.</span><span class="nx">VectorLayer</span><span class="p">(</span><span class="nx">worldview</span><span class="p">.</span><span class="nx">map</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">events</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">featureSelected</span><span class="o">:</span> <span class="nx">onFeatureSelect</span><span class="p">,</span>
+    <span class="nx">featureUnselected</span><span class="o">:</span> <span class="nx">onFeatureUnselect</span><span class="p">,</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<p>The vectorLayer object created here creates a OpenLayers.Layer.Vector object and is accessible :</p>
+
+<div class="highlight">
+<pre>  <span class="kd">var</span> <span class="nx">olVectorLayer</span> <span class="o">=</span> <span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">vectorLayer</span><span class="p">;</span>
+</pre>
+</div>
+
+
+<p>The onFeatureSelect and onFeatureUnselect callbacks are optional. The callback receives the defualt OpenLayers event object as the parameter. Importantly, to access the feature that fired the callback ;</p>
+
+<div class="highlight">
+<pre>  <span class="kd">var</span> <span class="nx">feature</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">feature</span><span class="p">;</span>
+</pre>
+</div>
+
+
+<p>feature here is a <a href="http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html">OpenLayers.Feature.Vector</a> object.</p>
+
+<h3>Drawing a Marker with a latitude/longitude pair</h3>
+
+<p>The default values are indicated in the comments.</p>
+
+<pre lang="javacript"><code>var lon = 77.6, lat = 12.655;
+
+var marker = vectorLayer.addMarker({
+  lon: lon,
+  lat: lat,
+  style: {
+     externalGraphic: "img/marker.png", // "img/marker.png"
+     graphicHeight: 25,  // 25
+     graphicWidth: 15,   // 15
+     graphicOpacity: 1.0 // 1.0
+  }
+});
+
+</code></pre>
+
+<p>This function returns a <a href="http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html">OpenLayers.Feature.Vector</a> object.</p>
+
+<h3>Drawing a Line with a list of latitude/longitude pairs</h3>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">points</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span><span class="nx">lon</span><span class="o">:</span> <span class="mf">77.6</span><span class="p">,</span> <span class="nx">lat</span><span class="o">:</span> <span class="mf">12.655</span><span class="p">},</span>
+  <span class="p">{</span><span class="nx">lon</span><span class="o">:</span> <span class="mf">77.688</span><span class="p">,</span> <span class="nx">lat</span><span class="o">:</span> <span class="mf">12.655</span><span class="p">}</span>
+<span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">line</span> <span class="o">=</span> <span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addLine</span><span class="p">({</span>
+  <span class="nx">points</span><span class="o">:</span> <span class="nx">points</span><span class="p">,</span>
+  <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">"#ff0000"</span><span class="p">,</span> <span class="c1">// "#ff0000"</span>
+    <span class="nx">strokeOpacity</span><span class="o">:</span> <span class="mf">1.0</span>      <span class="c1">// 0.7</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+</pre>
+</div>
+
+
+<p>This function returns a <a href="http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html">OpenLayers.Feature.Vector</a> object.</p>
+
+<h3>Drawing a Polygon with a list of latitude/longitude pairs</h3>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">points</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span><span class="nx">lon</span><span class="o">:</span> <span class="mf">77.6</span><span class="p">,</span> <span class="nx">lat</span><span class="o">:</span> <span class="mf">12.655</span><span class="p">},</span>
+  <span class="p">{</span><span class="nx">lon</span><span class="o">:</span> <span class="mf">77.688</span><span class="p">,</span> <span class="nx">lat</span><span class="o">:</span> <span class="mf">12.655</span><span class="p">},</span>
+  <span class="p">{</span><span class="nx">lon</span><span class="o">:</span><span class="mf">77.55</span><span class="p">,</span> <span class="nx">lat</span><span class="o">:</span><span class="mf">12.55</span><span class="p">}</span>
+<span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">polygon</span> <span class="o">=</span> <span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addPolygon</span><span class="p">({</span>
+  <span class="nx">points</span><span class="o">:</span> <span class="nx">points</span><span class="p">,</span>
+  <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">"#ff0000"</span><span class="p">,</span> <span class="c1">// "#ff0000"</span>
+    <span class="nx">strokeOpacity</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span>     <span class="c1">// 1.0</span>
+    <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">"#ff0000"</span><span class="p">,</span>   <span class="c1">// "#ff0000"</span>
+    <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.5</span>        <span class="c1">// 0.5</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+</pre>
+</div>
+
+
+<p>This function returns a <a href="http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html">OpenLayers.Feature.Vector</a> object.</p>
+
+<h3>Drawing a Circle with a latitude/longitude pair and a radius</h3>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">lon</span> <span class="o">=</span> <span class="mf">77.6</span><span class="p">,</span> <span class="nx">lat</span> <span class="o">=</span> <span class="mf">12.655</span><span class="p">,</span> <span class="nx">radius</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">;</span>
+
+<span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addCircle</span><span class="p">({</span>
+  <span class="nx">lon</span><span class="o">:</span> <span class="nx">lon</span><span class="p">,</span>
+  <span class="nx">lat</span><span class="o">:</span> <span class="nx">lat</span><span class="p">,</span>
+  <span class="nx">radius</span><span class="o">:</span> <span class="nx">radius</span><span class="p">,</span>
+  <span class="nx">style</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">"#ff0000"</span><span class="p">,</span> <span class="c1">// "#ff0000"       </span>
+    <span class="nx">strokeOpacity</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span>     <span class="c1">// 1.0</span>
+    <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">"#0000ff"</span><span class="p">,</span>   <span class="c1">// "#0000ff"</span>
+    <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.5</span>        <span class="c1">// 0.5</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+</pre>
+</div>
+
+
+<p>This function returns a <a href="http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html">OpenLayers.Feature.Vector</a> object.</p>
+
+<h3>Attaching a Popup to a feature</h3>
+
+<p>Popups can be either added in an adhoc fashion to vector features or be registered in the feature callbacks (For instance, shown when selected, hidden when un-selected). </p>
+
+<p>The popContent defined below can be any HTML content. Ensure you strip out any potentially dangerous tags from the HTML.</p>
+
+<div class="highlight">
+<pre>
+<span class="kd">var</span> <span class="nx">markerWithPopup</span> <span class="o">=</span> <span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addMarker</span><span class="p">({</span>
+  <span class="nx">lon</span><span class="o">:</span> <span class="nx">lon</span><span class="p">,</span>
+  <span class="nx">lat</span><span class="o">:</span> <span class="nx">lat</span><span class="p">,</span>
+<span class="p">)};</span>
+
+<span class="kd">var</span> <span class="nx">popContent</span> <span class="o">=</span> <span class="s2">"&lt;div style='color:red;margin-top:20px;'&gt;I'm a popup&lt;/div&gt;"</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">pop</span> <span class="o">=</span> <span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addPopup</span><span class="p">({</span>
+  <span class="nx">feature</span><span class="o">:</span> <span class="nx">markerWithPopup</span><span class="p">,</span>
+  <span class="nx">content</span><span class="o">:</span> <span class="nx">popContent</span><span class="p">,</span>
+  <span class="nx">width</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span>
+  <span class="nx">height</span><span class="o">:</span> <span class="mi">300</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<p>The addPopup function returns a <a href="http://dev.openlayers.org/releases/OpenLayers-2.6/doc/apidocs/files/OpenLayers/Popup/FramedCloud-js.html">OpenLayers.Popup.FramedCloud</a> object.</p>
+
+<h3>Drawing a Line from a geometry and bounds</h3>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">line_geom</span> <span class="o">=</span> <span class="s2">"LINESTRING(8644765.421588 1420984.1257934,8638382.9297271 1418920.32603)"</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">line_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mf">8638382.9297271</span><span class="p">,</span><span class="mf">1418920.32603</span><span class="p">,</span><span class="mf">8644765.421588</span><span class="p">,</span><span class="mf">1420984.1257934</span><span class="p">];</span>
+<span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addFeatureFromGeometry</span><span class="p">(</span><span class="nx">lineGeom</span><span class="p">,</span> <span class="nx">lineBounds</span><span class="p">);</span> <span class="c1">// lineBounds is optional</span>
+</pre>
+</div>
+
+
+<h3>Drawing a Polygon from a geometry and bounds</h3>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">polygonGeom</span> <span class="o">=</span> <span class="s2">"POLYGON((8631656.4712389 1424118.0439527,8643007.3699377 1423124.3625851,8632917.6822054 1418633.687174,8631656.4712389 1424118.0439527))"</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">polygonBounds</span> <span class="o">=</span> <span class="p">[</span><span class="mf">8641249.3182874</span><span class="p">,</span><span class="mf">1418499.9223745</span><span class="p">,</span><span class="mf">8644746.3123309</span><span class="p">,</span><span class="mf">1420085.9907112</span><span class="p">];</span>
+<span class="nx">vectorLayer</span><span class="p">.</span><span class="nx">addFeatureFromGeometry</span><span class="p">(</span><span class="nx">polygonGeom</span><span class="p">,</span> <span class="nx">polygonBounds</span><span class="p">);</span> <span class="c1">// polygonBounds is optional</span>
+
+</pre>
+</div>
+
+
+<h2>The Toolbar</h2>
+
+<p>The Toolbar is native to WorldView, in that, it does not wrap any OpenLayers object. This Toolbar is configurable. You can decide which controls you need in the toolbar &amp; the styling that needs to be applied. </p>
+
+<p>To initialize the toolbar, you need to first create a vector layer (as illustrated earlier).</p>
+
+<div class="highlight">
+<pre><span class="nx">worldview</span><span class="p">.</span><span class="nx">initToolbar</span><span class="p">({</span>
+  <span class="nx">vectorLayer</span><span class="o">:</span> <span class="nx">vectorLayer</span><span class="p">,</span>
+  <span class="nx">controls</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"navigate"</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="s2">"point"</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="s2">"line"</span><span class="o">:</span> <span class="p">{},</span>
+    <span class="s2">"polygon"</span><span class="o">:</span> <span class="p">{}</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+</pre>
+</div>
+
+
+<p>You can also register a callback that needs to be fired when a feature (point, line, polygon) is added to the map with toolbar.</p>
+
+<div class="highlight">
+<pre><span class="nx">WorldView</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">.</span><span class="nx">featureAdded</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+</div>
+
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/shreyas-satish">shreyas-satish</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-32558131-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
