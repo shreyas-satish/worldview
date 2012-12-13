@@ -17,6 +17,7 @@
         <div id="map1" class="smallmap"></div>
 
         <script src="vendor/OpenLayers.js"></script>
+        <script src="http://developers.cloudmade.com/attachments/download/58/cloudmade.js"></script>
 
         <script src="lib/worldview.js"></script>
 
@@ -26,9 +27,10 @@
                 mapid: 'map',
                 imagesPath: "img/",
                 cssPath: "css/map.css",
+                projection: "EPSG:4326",
 
                 layers: {
-                    'OSM': {},
+                'CloudMade': {styleId: 997, apiKey: 'BC9A493B41014CAABB98F0471D759707'},
                 },
                 controls: [],
                 initialCoordinates: {

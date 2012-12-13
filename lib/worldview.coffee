@@ -338,6 +338,12 @@ WorldView.LayerDefinitions =
   'Bing Hybrid': (options) -> new OpenLayers.Layer.Bing({name: "Hybrid", key: options.apiKey, type: "AerialWithLabels"})
   
   'Bing Aerial': (options) -> new OpenLayers.Layer.Bing({name: "Aerial", key: options.apiKey, type: "Aerial"})
+
+  'CloudMade': (options) ->
+    new OpenLayers.Layer.CloudMade("CloudMade", {
+      key: options.apiKey
+      styleId: options.styleId
+    })
   
   # 'WMS': -> new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'})
 
