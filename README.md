@@ -1,3 +1,6 @@
+
+## This library isn't maintained anymore. WorldView has only been tested with OpenLayers <= 2.13. Please consider using OpenLayers 3 directly.
+
 # WorldView
 
 WorldView is an easier way to use <a href = "http://openlayers.org" target="_blank">OpenLayers</a>. It comes with a set of easy-to-use APIs and a configurable Drawing Toolbar. 
